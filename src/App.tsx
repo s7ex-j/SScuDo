@@ -4,6 +4,8 @@ import type { Analysis, Campaign, Category, Finding, Level, UrlReport } from "./
 import { Term } from "./term/Term";
 import type { TermMood } from "./term/Term";
 import { EJEMPLOS } from "./ui/ejemplos";
+import { cargarComunidad, enviarReporte, reportesActivos } from "./reportes";
+import type { Comunidad } from "./reportes";
 
 type Vista = "revisar" | "campanas";
 
@@ -88,8 +90,9 @@ function Marcado({ texto, hallazgos }: { texto: string; hallazgos: Finding[] }) 
 }
 
 /** La dirección partida en piezas: lo que importa es el dominio real. */
-function Anatomia({ u }: { u: UrlReport }) {
+function Anatomia({ u, comunidad }: { u: UrlReport; comunidad: Comunidad | null }) {
   const malo = !u.official;
+  const rep = comunidad?.dominios.get(u.registrable);
   return (
     <div className={`anatomia ${malo ? "es-ajeno" : "es-oficial"}`}>
       <div className="anatomia-url" translate="no">
@@ -111,16 +114,22 @@ function Anatomia({ u }: { u: UrlReport }) {
           </>
         )}
       </p>
+      {rep && (
+        <p className="anatomia-comunidad">
+          {rep.n} personas reportaron este dominio en los últimos 30 días. Son reportes de usuarios, no una verificación.
+        </p>
+      )}
     </div>
   );
 }
 
-function TarjetaCampana({ c, abierta = false }: { c: Campaign; abierta?: boolean }) {
+function TarjetaCampana({ c, abierta = false, semana }: { c: Campaign; abierta?: boolean; semana?: number }) {
   return (
     <details className="campana" open={abierta}>
       <summary>
         <span className="campana-nombre">{c.name}</span>
         <span className="campana-gancho">{c.hook}</span>
+        {semana ? <span className="campana-semana">{semana} {semana === 1 ? "reporte" : "reportes"} esta semana</span> : null}
       </summary>
       <div className="campana-cuerpo">
         <h4>Cómo funciona</h4>
@@ -151,11 +160,19 @@ function TarjetaCampana({ c, abierta = false }: { c: Campaign; abierta?: boolean
   );
 }
 
-function Resultado({ texto, a }: { texto: string; a: Analysis }) {
+function Resultado({ texto, a, comunidad }: { texto: string; a: Analysis; comunidad: Comunidad | null }) {
   const v = VEREDICTO[a.level];
   const positivos = a.findings.filter((f) => f.weight > 0);
   const atenuantes = a.findings.filter((f) => f.weight < 0);
   const [copiado, setCopiado] = useState(false);
+  const [reporte, setReporte] = useState<"no" | "enviando" | "ok" | "limite" | "error">("no");
+  const reportables = [...new Set(a.urls.filter((u) => !u.official).map((u) => u.registrable))];
+
+  const reportar = async () => {
+    if (a.level === "sin_senales") return;
+    setReporte("enviando");
+    setReporte(await enviarReporte(reportables, a.campaign?.id ?? null, a.level));
+  };
 
   const compartir = async () => {
     const motivos = positivos.slice(0, 3).map((f) => `• ${f.title}`);
@@ -202,7 +219,7 @@ function Resultado({ texto, a }: { texto: string; a: Analysis }) {
         <div className="bloque">
           <h3>A dónde lleva de verdad</h3>
           {a.urls.map((u) => (
-            <Anatomia key={u.span[0]} u={u} />
+            <Anatomia key={u.span[0]} u={u} comunidad={comunidad} />
           ))}
         </div>
       )}
@@ -257,6 +274,27 @@ function Resultado({ texto, a }: { texto: string; a: Analysis }) {
         <p>SScuDo reconoce patrones conocidos. Una estafa nueva o bien escrita puede pasar sin que la marque.</p>
       </div>
 
+      {reportesActivos && a.level !== "sin_senales" && (reportables.length > 0 || a.campaign) && (
+        <div className="bloque reportar">
+          <h3>Avisa a los demás</h3>
+          {reporte === "ok" ? (
+            <p className="reportar-ok">Reporte recibido. Gracias: cuando varias personas reportan lo mismo, SScuDo se lo advierte a quien venga después.</p>
+          ) : (
+            <>
+              <p>
+                Se envía solo {reportables.length > 0 ? <>el dominio <strong translate="no">{reportables.join(", ")}</strong> y </> : null}
+                el tipo de estafa. Tu mensaje no sale de tu dispositivo.
+              </p>
+              <button type="button" className="boton-reportar" onClick={reportar} disabled={reporte === "enviando"}>
+                {reporte === "enviando" ? "Enviando…" : "Reportar esta estafa"}
+              </button>
+              {reporte === "limite" && <p className="reportar-nota">Llegaste al límite de reportes por hoy. Vuelve mañana.</p>}
+              {reporte === "error" && <p className="reportar-nota">No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.</p>}
+            </>
+          )}
+        </div>
+      )}
+
       <button type="button" className="boton-secundario" onClick={compartir}>
         {copiado ? "Resumen copiado" : "Compartir este resultado"}
       </button>
@@ -285,7 +323,12 @@ export function App() {
   const [revisado, setRevisado] = useState<{ texto: string; a: Analysis } | null>(null);
   const [leyendo, setLeyendo] = useState(false);
   const [puedePegar, setPuedePegar] = useState(() => typeof navigator !== "undefined" && !!navigator.clipboard?.readText);
+  const [comunidad, setComunidad] = useState<Comunidad | null>(null);
   const resultadoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    cargarComunidad().then(setComunidad);
+  }, []);
   const cajaRef = useRef<HTMLTextAreaElement>(null);
 
   const revisar = useCallback((t: string) => {
@@ -428,16 +471,18 @@ export function App() {
           </section>
 
           <div ref={resultadoRef} className="ancla" />
-          {revisado && <Resultado texto={revisado.texto} a={revisado.a} />}
+          {revisado && <Resultado key={revisado.texto} texto={revisado.texto} a={revisado.a} comunidad={comunidad} />}
         </main>
       ) : (
         <main>
           <section className="catalogo">
             <h1>Estafas que circulan en el Perú</h1>
             <p>Cómo funciona cada una y qué hacer si te llega. Toca una para abrirla.</p>
-            {CAMPAIGNS.map((c) => (
-              <TarjetaCampana key={c.id} c={c} />
-            ))}
+            {[...CAMPAIGNS]
+              .sort((x, y) => (comunidad?.campanas.get(y.id) ?? 0) - (comunidad?.campanas.get(x.id) ?? 0))
+              .map((c) => (
+                <TarjetaCampana key={c.id} c={c} semana={comunidad?.campanas.get(c.id)} />
+              ))}
           </section>
         </main>
       )}

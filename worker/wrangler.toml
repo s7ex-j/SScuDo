@@ -1,0 +1,16 @@
+name = "sscudo-reportes"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+[vars]
+# Orígenes que pueden ENVIAR reportes (separados por coma). Leer la lista es público.
+ORIGENES = "https://s7ex-j.github.io,http://localhost:5180"
+# Cuántas personas distintas deben reportar un dominio antes de mostrarlo.
+UMBRAL = "3"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sscudo"
+database_id = "PENDIENTE"  # lo imprime `wrangler d1 create sscudo`
+
+# Secretos (no van aquí): `wrangler secret put SAL` y `wrangler secret put ADMIN`

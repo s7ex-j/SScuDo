@@ -1,0 +1,20 @@
+{
+  "name": "sscudo-reportes",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Servicio de reportes de SScuDo (Cloudflare Workers + D1).",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:crear": "wrangler d1 execute sscudo --remote --file=schema.sql",
+    "test": "node test/servicio.test.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "esbuild": "^0.21.5",
+    "miniflare": "^3.20240909.0",
+    "typescript": "^7.0.2",
+    "wrangler": "^3.78.0"
+  }
+}

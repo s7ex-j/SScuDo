@@ -494,6 +494,60 @@ button {
   overflow-wrap: anywhere;
 }
 
+.anatomia-comunidad {
+  margin: 0;
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--line);
+  background: var(--red-wash);
+  font-size: 0.92rem;
+}
+
+.campana-semana {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--red-wash);
+  color: #ffd0d8;
+  font-size: 0.82rem;
+}
+
+.reportar p {
+  margin: 0 0 12px;
+  color: var(--text-2);
+  font-size: 0.95rem;
+}
+
+.reportar strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.boton-reportar {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--red);
+  color: #ffd0d8;
+  border-radius: 12px;
+  padding: 13px;
+  font-weight: 600;
+}
+
+.boton-reportar:hover {
+  background: var(--red-wash);
+}
+
+.reportar-ok {
+  color: var(--text) !important;
+  border-left: 3px solid var(--blue);
+  padding-left: 12px;
+}
+
+.reportar-nota {
+  margin: 10px 0 0 !important;
+  color: var(--amber) !important;
+}
+
 /* Hallazgos */
 .hallazgos {
   list-style: none;

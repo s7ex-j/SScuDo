@@ -45,6 +45,16 @@ Luego abre `chrome://extensions`, activa "Modo de desarrollador", pulsa "Cargar 
 
 **Límites:** no está en la Chrome Web Store; Chrome en Android no admite extensiones; "✓" significa "está en nuestra lista", no una garantía; y no muestra reportes de otras personas, porque eso necesita un servidor que aún no existe.
 
+## Reportes de la comunidad
+
+Cuando 3 personas distintas reportan el mismo dominio, SScuDo lo advierte a los siguientes, y la lista de estafas se ordena por reportes de la semana. Al reportar se envía solo el dominio y el tipo de estafa: nunca el mensaje, ni teléfonos, ni la IP. Cómo funciona, sus límites y cómo publicarlo: [docs/REPORTES.md](docs/REPORTES.md).
+
+<p>
+  <img src="docs/capturas/reportes-catalogo.png" width="260" alt="Lista de estafas ordenada por reportes de la semana">
+</p>
+
+Está **apagado hasta que se publique el servicio** (`worker/`). La captura es de una prueba local con datos de ejemplo.
+
 ## Probarlo
 
 ```bash
@@ -77,6 +87,7 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 - Un celular real: instalación como app y "Compartir → SScuDo" en Android. En iPhone, compartir hacia una app web no está disponible.
 - La publicación en GitHub Pages.
 - La extensión se probó cargada en Chrome real contra páginas de prueba locales (4 de 4 casos), no contra páginas de phishing reales ni en uso diario. El clic derecho no se probó.
+- El servicio de reportes pasó sus pruebas en local (11 casos, más la app contra él), pero no está publicado: falta crear la cuenta de Cloudflare. La extensión todavía no usa la lista de reportes.
 - La lista de dominios oficiales (`src/engine/brands.ts`) necesita una revisión entidad por entidad.
 
 **Límites de diseño**
@@ -88,7 +99,7 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 
 1. Juntar mensajes reales (con datos personales borrados) y medir contra ellos.
 2. Leer capturas de pantalla (texto en imágenes).
-3. Reportes de la comunidad y lista de campañas activas por semana.
+3. Publicar el servicio de reportes y conectar la extensión a la lista.
 4. Tarjeta de resultado como imagen para compartir.
 
 Para sumar una campaña, una señal o una marca: [docs/AGREGAR_CAMPANA.md](docs/AGREGAR_CAMPANA.md).
@@ -99,6 +110,7 @@ Para sumar una campaña, una señal o una marca: [docs/AGREGAR_CAMPANA.md](docs/
 src/engine/   motor: normalización, señales, enlaces, marcas, campañas, veredicto
 src/App.tsx   interfaz
 extension/    extensión del navegador (usa el mismo motor)
+worker/       servicio de reportes (Cloudflare Workers + D1)
 src/term/     Term (derechos reservados)
 tests/        conjuntos de prueba y medición
 public/       manifiesto, service worker, iconos
