@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "SScuDo",
+  "version": "0.1.0",
+  "description": "Te avisa si la página que abriste imita a un banco, billetera o entidad del Perú. Todo se revisa en tu equipo.",
+  "icons": { "192": "iconos/icono-192.png", "512": "iconos/icono-512.png" },
+  "action": { "default_title": "SScuDo", "default_popup": "popup.html", "default_icon": { "192": "iconos/icono-192.png" } },
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [{ "matches": ["http://*/*", "https://*/*"], "js": ["content.js"], "run_at": "document_idle" }],
+  "permissions": ["activeTab", "contextMenus", "storage"],
+  "minimum_chrome_version": "116"
+}

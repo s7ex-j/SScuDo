@@ -19,6 +19,32 @@ Un revisor de estafas digitales pensado para el Perú, con Term ([@s7ex.git](htt
 - **Dice lo que no revisó**, siempre.
 - **Se instala como app** y funciona sin conexión. En Android puede recibir texto desde "Compartir".
 
+## Extensión para el navegador
+
+La misma revisión, mientras navegas en la PC (Chrome, Edge, Brave).
+
+<p>
+  <img src="docs/capturas/extension-aviso.png" width="520" alt="Aviso de la extensión sobre una página que imita a un banco">
+</p>
+
+- **Aviso en la página** cuando el dominio imita a un banco, billetera o entidad, o cuando una página ajena pide una clave a su nombre.
+- **Marca en el icono**: `!` riesgo alto, `?` sospechoso, `✓` dominio oficial de la lista.
+- **Ventana** con el dominio real de la página y un cuadro para pegar mensajes.
+- **Clic derecho → "Revisar con SScuDo"** sobre un texto o un enlace.
+
+Solo mira la dirección, el título y si la página tiene campos de clave o tarjeta. No lee lo que escribes, no guarda historial y no hace peticiones de red.
+
+**Instalarla (modo desarrollador):**
+
+```bash
+npm install
+npm run build:ext      # genera dist-extension/
+```
+
+Luego abre `chrome://extensions`, activa "Modo de desarrollador", pulsa "Cargar descomprimida" y elige `dist-extension/`. Sin compilar: descarga `sscudo-extension` desde la última ejecución de Actions.
+
+**Límites:** no está en la Chrome Web Store; Chrome en Android no admite extensiones; "✓" significa "está en nuestra lista", no una garantía; y no muestra reportes de otras personas, porque eso necesita un servidor que aún no existe.
+
 ## Probarlo
 
 ```bash
@@ -50,6 +76,7 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 - Mensajes de estafa reales. Es lo primero que falta.
 - Un celular real: instalación como app y "Compartir → SScuDo" en Android. En iPhone, compartir hacia una app web no está disponible.
 - La publicación en GitHub Pages.
+- La extensión se probó cargada en Chrome real contra páginas de prueba locales (4 de 4 casos), no contra páginas de phishing reales ni en uso diario. El clic derecho no se probó.
 - La lista de dominios oficiales (`src/engine/brands.ts`) necesita una revisión entidad por entidad.
 
 **Límites de diseño**
@@ -71,6 +98,7 @@ Para sumar una campaña, una señal o una marca: [docs/AGREGAR_CAMPANA.md](docs/
 ```
 src/engine/   motor: normalización, señales, enlaces, marcas, campañas, veredicto
 src/App.tsx   interfaz
+extension/    extensión del navegador (usa el mismo motor)
 src/term/     Term (derechos reservados)
 tests/        conjuntos de prueba y medición
 public/       manifiesto, service worker, iconos

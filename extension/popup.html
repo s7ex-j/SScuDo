@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es-PE">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>SScuDo</title>
+  </head>
+  <body>
+    <header>
+      <img src="iconos/icono.svg" width="28" height="28" alt="" />
+      <strong>SScuDo</strong>
+    </header>
+    <section id="pagina" aria-live="polite"></section>
+    <section id="mensaje">
+      <label for="texto">Revisar un mensaje o enlace</label>
+      <textarea id="texto" rows="3" placeholder="Pega aquí el mensaje que te llegó."></textarea>
+      <button id="revisar" type="button">Revisar</button>
+      <div id="resultado" aria-live="polite"></div>
+    </section>
+    <footer>Todo se revisa en tu equipo. No se envía tu historial ni lo que escribes.</footer>
+    <script src="popup.js"></script>
+  </body>
+</html>
