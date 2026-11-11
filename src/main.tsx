@@ -16,9 +16,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>,
 );
 
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
+// Dentro de la app de Android no hace falta: los archivos ya están en el teléfono.
+const enAndroid = "SScuDoAndroid" in window;
+if (import.meta.env.PROD && !enAndroid && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {
+    // El service worker vive en la raíz del sitio para poder atender también /app/.
+    navigator.serviceWorker.register(new URL("../sw.js", location.href), { scope: "../" }).catch(() => {
       /* sin service worker la app igual funciona; solo no queda sin conexión */
     });
   });

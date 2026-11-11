@@ -3,7 +3,7 @@
   "short_name": "SScuDo",
   "description": "Pega un mensaje sospechoso y mira qué tiene de raro. El análisis ocurre en tu dispositivo.",
   "lang": "es-PE",
-  "start_url": "./",
+  "start_url": "./app/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#151923",
@@ -14,7 +14,7 @@
     { "src": "iconos/icono.svg", "sizes": "any", "type": "image/svg+xml" }
   ],
   "share_target": {
-    "action": "./compartir",
+    "action": "./app/compartir",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": { "title": "title", "text": "text", "url": "url" }

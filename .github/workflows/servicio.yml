@@ -1,0 +1,61 @@
+# Despliega el servicio de reportes (worker/) en Cloudflare.
+# Necesita estos secretos en Settings → Secrets and variables → Actions:
+#   CLOUDFLARE_API_TOKEN   token con permisos "Workers Scripts: Edit" y "D1: Edit"
+#   CLOUDFLARE_ACCOUNT_ID  el id de tu cuenta
+#   SSCUDO_SAL             un texto largo al azar
+#   SSCUDO_ADMIN           tu clave de moderación
+# Ver docs/REPORTES.md. Sin los secretos, el flujo termina sin hacer nada.
+name: Servicio de reportes
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["worker/**", "src/engine/brands.ts", ".github/workflows/servicio.yml"]
+permissions:
+  contents: read
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm test
+      - name: ¿Hay credenciales?
+        id: cred
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::Faltan los secretos de Cloudflare: no se despliega. Ver docs/REPORTES.md."
+            echo "ok=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=si" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Base de datos
+        if: steps.cred.outputs.ok == 'si'
+        run: |
+          buscar() { npx wrangler d1 list --json | jq -r '.[] | select(.name=="sscudo") | (.uuid // .database_id // empty)' | head -1; }
+          ID="$(buscar)"
+          if [ -z "$ID" ]; then npx wrangler d1 create sscudo; ID="$(buscar)"; fi
+          if [ -z "$ID" ]; then echo "::error::No se pudo crear u obtener la base sscudo"; exit 1; fi
+          sed -i "s/PENDIENTE/$ID/" wrangler.toml
+          npx wrangler d1 execute sscudo --remote --file=schema.sql --yes
+      - name: Desplegar
+        if: steps.cred.outputs.ok == 'si'
+        run: npx wrangler deploy
+      - name: Secretos del servicio
+        if: steps.cred.outputs.ok == 'si'
+        env:
+          SAL: ${{ secrets.SSCUDO_SAL }}
+          ADMIN: ${{ secrets.SSCUDO_ADMIN }}
+        run: |
+          if [ -z "$SAL" ] || [ -z "$ADMIN" ]; then echo "::error::Faltan SSCUDO_SAL o SSCUDO_ADMIN"; exit 1; fi
+          printf '%s' "$SAL" | npx wrangler secret put SAL
+          printf '%s' "$ADMIN" | npx wrangler secret put ADMIN

@@ -6,6 +6,11 @@ export default defineConfig({
   base: "./",
   plugins: [react()],
   server: { port: 5180 },
-  build: { outDir: "dist", target: "es2021" },
+  build: {
+    outDir: "dist",
+    target: "es2021",
+    // Dos páginas: la presentación (raíz) y la app (/app/).
+    rollupOptions: { input: { inicio: "index.html", app: "app/index.html" } },
+  },
   test: { include: ["tests/**/*.test.ts"] },
 });

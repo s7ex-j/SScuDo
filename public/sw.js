@@ -4,11 +4,11 @@
 //    salgan del dispositivo: el mensaje se guarda en la caché local y la app lo
 //    lee al abrirse. Nunca viaja en la URL ni a un servidor.
 
-const CACHE = "sscudo-v1";
+const CACHE = "sscudo-v2";
 const BUZON = "sscudo-compartido";
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./manifest.webmanifest"])).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./app/", "./manifest.webmanifest"])).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (e) => {
@@ -29,7 +29,7 @@ self.addEventListener("fetch", (e) => {
         const partes = [form.get("title"), form.get("text"), form.get("url")].filter((x) => typeof x === "string" && x.trim());
         const buzon = await caches.open(BUZON);
         await buzon.put("./__mensaje", new Response(partes.join("\n")));
-        return Response.redirect("./?compartido=1", 303);
+        return Response.redirect(new URL("./app/?compartido=1", self.registration.scope).href, 303);
       })(),
     );
     return;
@@ -38,14 +38,17 @@ self.addEventListener("fetch", (e) => {
 
   // Navegación: primero la red (para recibir versiones nuevas), caché si no hay.
   if (req.mode === "navigate") {
+    const limpia = url.origin + url.pathname;
     e.respondWith(
       fetch(req)
         .then((res) => {
-          const copia = res.clone();
-          caches.open(CACHE).then((c) => c.put("./", copia));
+          if (res.ok) {
+            const copia = res.clone();
+            caches.open(CACHE).then((c) => c.put(limpia, copia));
+          }
           return res;
         })
-        .catch(() => caches.match("./").then((r) => r || Response.error())),
+        .catch(() => caches.match(limpia).then((r) => r || caches.match(new URL("./app/", self.registration.scope).href)).then((r) => r || Response.error())),
     );
     return;
   }

@@ -1,0 +1,75 @@
+# Publica una versión: compila el APK y el zip de la extensión y los sube a
+# Releases con nombres fijos (sscudo.apk, sscudo-extension.zip), que son los
+# que enlaza la página de presentación.
+#
+# Se dispara al subir una etiqueta v* (por ejemplo v0.2.0) o a mano.
+#
+# Firma del APK (recomendado): crea estos secretos en Settings → Secrets → Actions
+#   ANDROID_KEYSTORE_B64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+# Sin ellos el APK sale con firma de prueba: funciona, pero para actualizar hay
+# que desinstalar la versión anterior. Ver docs/ANDROID.md.
+name: Versión
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      etiqueta:
+        description: "Etiqueta de la versión (por ejemplo v0.2.1)"
+        required: true
+permissions:
+  contents: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      ETIQUETA: ${{ github.event.inputs.etiqueta || github.ref_name }}
+      KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:android
+        env:
+          VITE_SSCUDO_API: ${{ vars.SSCUDO_API }}
+      - run: npm run build:ext
+      - name: Empaquetar la extensión
+        run: cd dist-extension && zip -r ../sscudo-extension.zip .
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+      - name: Preparar la firma
+        if: env.KS_B64 != ''
+        run: |
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/sscudo.jks"
+          echo "ANDROID_KEYSTORE=$RUNNER_TEMP/sscudo.jks" >> "$GITHUB_ENV"
+      - name: Compilar el APK
+        run: gradle -p android assembleRelease --no-daemon
+        env:
+          VERSION_NAME: ${{ env.ETIQUETA }}
+          VERSION_CODE: ${{ github.run_number }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      - run: cp android/app/build/outputs/apk/release/app-release.apk sscudo.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.ETIQUETA }}
+          name: SScuDo ${{ env.ETIQUETA }}
+          make_latest: true
+          files: |
+            sscudo.apk
+            sscudo-extension.zip
+          body: |
+            - **sscudo.apk**: app para Android 8 o superior.
+            - **sscudo-extension.zip**: extensión para Chrome, Edge y Brave.
+
+            Instrucciones de instalación: https://s7ex-j.github.io/SScuDo/#descargar

@@ -4,3 +4,10 @@ dist
 .DS_Store
 capturas-tmp
 dist-extension
+android/app/src/main/assets
+android/.gradle
+android/build
+android/app/build
+android/local.properties
+*.jks
+*.keystore

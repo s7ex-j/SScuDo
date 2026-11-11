@@ -4,7 +4,7 @@ compatibility_date = "2024-09-23"
 
 [vars]
 # Orígenes que pueden ENVIAR reportes (separados por coma). Leer la lista es público.
-ORIGENES = "https://s7ex-j.github.io,http://localhost:5180"
+ORIGENES = "https://s7ex-j.github.io,https://appassets.androidplatform.net,http://localhost:5180"
 # Cuántas personas distintas deben reportar un dominio antes de mostrarlo.
 UMBRAL = "3"
 

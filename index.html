@@ -2,16 +2,148 @@
 <html lang="es-PE">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#151923" />
-    <meta name="description" content="Pega un mensaje sospechoso y mira qué tiene de raro. Análisis de estafas digitales del Perú, en tu propio dispositivo." />
-    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>SScuDo: mira qué tiene de raro ese mensaje</title>
+    <meta name="description" content="Pega un mensaje sospechoso y SScuDo te muestra, parte por parte, por qué puede ser una estafa. Hecho para el Perú. Gratis, de código abierto y sin enviar tus mensajes a ningún lado." />
+    <meta property="og:title" content="SScuDo: mira qué tiene de raro ese mensaje" />
+    <meta property="og:description" content="Revisa mensajes y enlaces sospechosos. Hecho para el Perú, gratis y de código abierto." />
+    <meta property="og:image" content="https://s7ex-j.github.io/SScuDo/iconos/icono-512.png" />
     <link rel="icon" href="./iconos/icono.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="./iconos/icono-192.png" />
-    <title>SScuDo: revisa un mensaje sospechoso</title>
+    <script type="module" src="/src/landing/main.ts"></script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <header class="barra">
+      <a class="marca" href="./">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <path d="M12 2.5 20 5.4v6.2c0 4.8-3.3 8.3-8 9.9-4.7-1.6-8-5.1-8-9.9V5.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <path d="m8.6 9.4 2.6 2.3-2.6 2.3M12.6 14.4h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>SScuDo</span>
+      </a>
+      <nav>
+        <a href="#descargar">Descargar</a>
+        <a href="#como">Cómo funciona</a>
+        <a href="https://github.com/s7ex-j/SScuDo">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="portada">
+        <div class="portada-texto">
+          <h1>Antes de tocar ese enlace, mira a dónde lleva.</h1>
+          <p>
+            SScuDo revisa el mensaje que te llegó y te muestra, parte por parte, qué tiene de raro. Reconoce las estafas que circulan en el Perú: el falso bono, la cuenta bloqueada, el código de WhatsApp, el "cambié de número".
+          </p>
+          <div class="acciones">
+            <a class="boton" href="./app/">Revisar un mensaje ahora</a>
+            <a class="enlace" href="#descargar">o instálalo en tu celular o tu navegador</a>
+          </div>
+          <p class="pequeno">Gratis. Sin registro. El análisis ocurre en tu dispositivo.</p>
+        </div>
+
+        <figure class="muestra" aria-label="Ejemplo de un mensaje revisado por SScuDo">
+          <div class="muestra-veredicto">
+            <span class="medidor"><i></i><i></i><i></i></span>
+            <strong>Alta probabilidad de estafa</strong>
+          </div>
+          <p class="muestra-mensaje">
+            BCP: Tu <mark class="arena">cuenta ha sido bloqueada</mark> por <mark class="arena">actividad sospechosa</mark>. <mark class="ambar">Verifica tus datos</mark> en
+            <mark class="rojo">https://viabcp.com.seguridad-clientes.online/login</mark>
+          </p>
+          <div class="muestra-url">
+            <span>https://viabcp.com.</span><b>seguridad-clientes.online</b><span>/login</span>
+          </div>
+          <figcaption>
+            El dominio real es <strong>seguridad-clientes.online</strong>. Lo que va antes lo escribe quien armó el enlace: puede decir cualquier cosa.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="descargar" class="seccion">
+        <h2>Tres formas de usarlo</h2>
+        <div class="formas">
+          <article>
+            <h3>En la web</h3>
+            <p>Abre la página, pega el mensaje y listo. Funciona en cualquier celular o computadora, y se puede instalar como app desde el menú del navegador.</p>
+            <a class="boton" href="./app/">Abrir SScuDo</a>
+          </article>
+          <article>
+            <h3>App para Android</h3>
+            <p>Además de revisar mensajes, puede mirar cada enlace antes de abrirlo y avisarte cuando te llega un mensaje con marcas de estafa. Las dos funciones son opcionales.</p>
+            <a class="boton" href="https://github.com/s7ex-j/SScuDo/releases/latest/download/sscudo.apk">Descargar APK</a>
+            <details>
+              <summary>Cómo instalar un APK</summary>
+              <ol>
+                <li>Descarga el archivo y ábrelo.</li>
+                <li>Android pedirá permiso para "instalar apps desconocidas" desde tu navegador. Acéptalo solo para esta instalación.</li>
+                <li>Si Play Protect pregunta, elige "Instalar de todas formas". Aparece porque la app todavía no está en Play Store.</li>
+              </ol>
+            </details>
+          </article>
+          <article>
+            <h3>Extensión para Chrome</h3>
+            <p>Te avisa en la propia página cuando el sitio que abriste imita a un banco, una billetera o una entidad pública. También sirve en Edge y Brave.</p>
+            <a class="boton" href="https://github.com/s7ex-j/SScuDo/releases/latest/download/sscudo-extension.zip">Descargar extensión</a>
+            <details>
+              <summary>Cómo instalarla</summary>
+              <ol>
+                <li>Descomprime el archivo en una carpeta.</li>
+                <li>Abre <code>chrome://extensions</code> y activa "Modo de desarrollador".</li>
+                <li>Pulsa "Cargar descomprimida" y elige la carpeta.</li>
+              </ol>
+            </details>
+          </article>
+        </div>
+      </section>
+
+      <section id="como" class="seccion dos">
+        <div>
+          <h2>Cómo funciona</h2>
+          <p>SScuDo no adivina. Aplica reglas que cualquiera puede leer en el código, y por eso siempre te dice por qué marcó algo.</p>
+          <ol class="pasos">
+            <li><strong>Lee el mensaje sin abrir nada.</strong> Busca presión, promesas, amenazas y pedidos de claves, códigos o dinero.</li>
+            <li><strong>Desarma cada enlace.</strong> Separa el dominio real del resto y lo compara con los dominios oficiales de bancos, billeteras y entidades del Perú.</li>
+            <li><strong>Lo compara con estafas conocidas.</strong> Si se parece a una, te explica cómo funciona y qué hacer.</li>
+            <li><strong>Te da un veredicto de tres niveles.</strong> Alta probabilidad de estafa, sospechoso o "no encontré señales". Nunca dice "es seguro".</li>
+          </ol>
+        </div>
+        <div>
+          <h2>Lo que hace con tus datos</h2>
+          <ul class="lista">
+            <li>El mensaje que pegas <strong>no sale de tu dispositivo</strong>. No hay servidor que lo reciba.</li>
+            <li>Si decides reportar una estafa, se envía <strong>solo el dominio y el tipo de estafa</strong>. Nunca el mensaje, tu número ni tu IP.</li>
+            <li>La extensión solo mira la dirección, el título y si la página pide una clave. No lee lo que escribes ni guarda tu historial.</li>
+            <li>No hay cuentas, anuncios ni rastreadores.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="seccion dos">
+        <div>
+          <h2>La app de Android no vigila tu pantalla</h2>
+          <p>Leer todo lo que aparece en la pantalla exige el permiso de accesibilidad, el mismo que usan los troyanos bancarios. Algunas apps de bancos lo detectan y se bloquean. Por eso SScuDo protege de otra forma:</p>
+          <ul class="lista">
+            <li><strong>Enlaces:</strong> si la eliges como app para abrir enlaces, revisa cada uno en el momento del toque y lo pasa a tu navegador. No corre en segundo plano.</li>
+            <li><strong>Mensajes:</strong> si le das acceso a notificaciones, lee el texto de cada mensaje que llega y solo te interrumpe cuando ve una estafa clara.</li>
+            <li><strong>A pedido:</strong> selecciona un texto en cualquier app y elige "Revisar con SScuDo", o usa Compartir.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>Lo que no puede hacer</h2>
+          <ul class="lista">
+            <li>No abre los enlaces ni sabe desde cuándo existe un dominio.</li>
+            <li>No lee imágenes, audios ni llamadas.</li>
+            <li>Reconoce patrones conocidos. Una estafa nueva o bien escrita puede pasar sin marca.</li>
+            <li>No reemplaza a tu banco ni a la Policía. Si ya diste tus datos, llama a tu banco primero.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <p>SScuDo es un proyecto de <a href="https://www.instagram.com/s7ex.git/">@s7ex.git</a>, de código abierto en <a href="https://github.com/s7ex-j/SScuDo">GitHub</a>.</p>
+      <p>Si encuentras un mensaje de estafa que SScuDo no detecta, o uno normal que marca por error, cuéntalo en <a href="https://github.com/s7ex-j/SScuDo/issues">Issues</a>.</p>
+    </footer>
   </body>
 </html>

@@ -200,7 +200,7 @@ export const SIGNALS: TextSignal[] = [
     title: "Dice que te envió plata por error y quiere que la devuelvas",
     detail: "El comprobante que te muestra puede ser falso. Revisa el saldo en tu app, no en una captura. Si de verdad hubo un error, lo resuelve el banco.",
     patterns: [
-      g(String.raw`\b(yapee|plinee|deposite|transferi|envie|mande|abone|te hice un (yape|plin|deposito))\b[^.\n]{0,45}\b(por error|de mas|equivocad[oa]|por equivocacion|a (tu|este) numero sin querer)\b`),
+      g(String.raw`\b(yapee|plinee|deposite|transferi|abone|te (envie|mande) (plata|dinero|un (yape|plin|deposito)|\d+)|te hice un (yape|plin|deposito))\b[^.\n]{0,45}\b(por error|de mas|equivocad[oa]|por equivocacion|a (tu|este) numero sin querer)\b`),
       g(String.raw`\b(por error|me equivoque)\b[^.\n]{0,60}\b(yape|plin|deposit|transfer)\w*`),
       g(String.raw`\b(yapee|plinee|deposite|transferi|envie|mande|abone)\b[^.\n]{0,45}\b(me equivoque|numero equivocado|cuenta equivocada)\b`),
       g(String.raw`\b(devuelveme|devuelvame|me (devuelves|devuelve|regresas|puedes devolver|podrias devolver)|regresame|regreseme|reenviame|reembolseme)\b[^.\n]{0,45}\b(yape|plin|deposito|transferencia|dinero|plata|diferencia|vuelto|monto|soles|s\/)\b`),

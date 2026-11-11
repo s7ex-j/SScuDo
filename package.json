@@ -1,7 +1,7 @@
 {
   "name": "sscudo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "SScuDo: pega un mensaje sospechoso y mira qué tiene de raro. Análisis de estafas digitales del Perú, en tu propio dispositivo.",
   "author": "s7ex-j",
@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "evaluar": "vitest run tests/evaluacion.test.ts --reporter=verbose",
-    "build:ext": "tsc --noEmit && node scripts/build-extension.mjs"
+    "build:ext": "tsc --noEmit && node scripts/build-extension.mjs",
+    "build:android": "npm run build && node scripts/build-android-assets.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

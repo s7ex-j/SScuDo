@@ -9,6 +9,79 @@ import type { Comunidad } from "./reportes";
 
 type Vista = "revisar" | "campanas";
 
+// Puente con la app de Android (android/). En la web no existe.
+interface PuenteAndroid {
+  estado(): string; // JSON: { notificaciones, enlaces, avisos }
+  abrirAccesoNotificaciones(): void;
+  pedirRevisorDeEnlaces(): void;
+  pedirPermisoAvisos(): void;
+}
+const android = (window as unknown as { SScuDoAndroid?: PuenteAndroid }).SScuDoAndroid;
+
+/** Texto que llega en el fragmento (#texto=...). El fragmento nunca viaja a un servidor. */
+function textoDelFragmento(): string | null {
+  const m = /^#texto=(.*)$/s.exec(location.hash);
+  if (!m) return null;
+  try {
+    return decodeURIComponent(m[1]);
+  } catch {
+    return null;
+  }
+}
+
+function Proteccion({ puente }: { puente: PuenteAndroid }) {
+  const leer = () => {
+    try {
+      return JSON.parse(puente.estado()) as { notificaciones: boolean; enlaces: boolean; avisos: boolean };
+    } catch {
+      return { notificaciones: false, enlaces: false, avisos: false };
+    }
+  };
+  const [e, setE] = useState(leer);
+  useEffect(() => {
+    const refrescar = () => setE(leer());
+    document.addEventListener("visibilitychange", refrescar);
+    window.addEventListener("focus", refrescar);
+    const t = window.setInterval(refrescar, 2000);
+    return () => {
+      document.removeEventListener("visibilitychange", refrescar);
+      window.removeEventListener("focus", refrescar);
+      window.clearInterval(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <section className="proteccion">
+      <h2>Protección automática</h2>
+      <p>Las dos son opcionales y todo se revisa en tu teléfono. Nada se guarda ni se envía.</p>
+      <div className={`proteccion-fila ${e.enlaces ? "on" : ""}`}>
+        <div>
+          <strong>Revisar enlaces antes de abrirlos</strong>
+          <span>Cuando toques un enlace en WhatsApp o un SMS, SScuDo lo mira primero. Si no ve nada raro, lo abre en tu navegador de siempre al instante.</span>
+        </div>
+        {e.enlaces ? <em>Activo</em> : <button type="button" onClick={() => puente.pedirRevisorDeEnlaces()}>Activar</button>}
+      </div>
+      <div className={`proteccion-fila ${e.notificaciones ? "on" : ""}`}>
+        <div>
+          <strong>Avisarme si llega un mensaje de estafa</strong>
+          <span>Lee el texto de las notificaciones que te llegan y te avisa solo si uno tiene alta probabilidad de estafa. Android te mostrará una advertencia fuerte al activarlo: es el permiso de "acceso a notificaciones".</span>
+        </div>
+        {e.notificaciones ? <em>Activo</em> : <button type="button" onClick={() => puente.abrirAccesoNotificaciones()}>Activar</button>}
+      </div>
+      {e.notificaciones && !e.avisos && (
+        <div className="proteccion-fila">
+          <div>
+            <strong>Falta permitir los avisos</strong>
+            <span>Sin este permiso SScuDo detecta la estafa pero no puede mostrarte la alerta.</span>
+          </div>
+          <button type="button" onClick={() => puente.pedirPermisoAvisos()}>Permitir</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 const VEREDICTO: Record<Level, { titulo: string; resumen: string; term: string; paso: number }> = {
   alto: {
     titulo: "Alta probabilidad de estafa",
@@ -347,7 +420,22 @@ export function App() {
     }, 420);
   }, []);
 
-  // Texto que llega desde "Compartir → SScuDo" en Android.
+  // Texto que llega en el fragmento: desde la app de Android o un enlace propio.
+  useEffect(() => {
+    const tomar = () => {
+      const t = textoDelFragmento();
+      if (!t) return;
+      history.replaceState(null, "", location.pathname + location.search);
+      setVista("revisar");
+      setTexto(t);
+      revisar(t);
+    };
+    tomar();
+    window.addEventListener("hashchange", tomar);
+    return () => window.removeEventListener("hashchange", tomar);
+  }, [revisar]);
+
+  // Texto que llega desde "Compartir → SScuDo" en la app web instalada.
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (!params.has("compartido")) return;
@@ -379,7 +467,7 @@ export function App() {
   return (
     <div className="app">
       <header className="cabecera">
-        <a className="marca" href="./" aria-label="SScuDo, inicio">
+        <a className="marca" href={android ? "./" : "../"} aria-label="SScuDo, inicio">
           <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
             <path d="M12 2.5 20 5.4v6.2c0 4.8-3.3 8.3-8 9.9-4.7-1.6-8-5.1-8-9.9V5.4Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
             <path d="m8.6 9.4 2.6 2.3-2.6 2.3M12.6 14.4h3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -469,6 +557,8 @@ export function App() {
               ))}
             </div>
           </section>
+
+          {android && !revisado && <Proteccion puente={android} />}
 
           <div ref={resultadoRef} className="ancla" />
           {revisado && <Resultado key={revisado.texto} texto={revisado.texto} a={revisado.a} comunidad={comunidad} />}
