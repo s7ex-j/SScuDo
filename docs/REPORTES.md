@@ -23,7 +23,20 @@ Cuando varias personas reportan el mismo dominio, SScuDo se lo advierte a quien 
 - La cabecera de origen se puede falsificar fuera de un navegador. La protección real es el umbral, el límite diario y la moderación.
 - El texto siempre dice "reportes de usuarios, no una verificación".
 
-## Publicarlo (una vez)
+## Publicarlo desde GitHub (recomendado)
+
+1. En Cloudflare, crea un token de API (Mi perfil → API Tokens) con permisos de edición sobre **Workers Scripts** y **D1**. Copia también tu **Account ID** (aparece en el panel de Workers).
+2. En GitHub: Settings → Secrets and variables → Actions → **Secrets**, crea:
+   - `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`
+   - `SSCUDO_SAL`: un texto largo al azar
+   - `SSCUDO_ADMIN`: tu clave de moderación
+3. En la pestaña Actions, abre "Servicio de reportes" y pulsa **Run workflow**. Crea la base, las tablas y despliega.
+4. Copia la dirección `https://sscudo-reportes.….workers.dev` que aparece en el paso "Desplegar" y guárdala como **variable** `SSCUDO_API` (misma pantalla, pestaña Variables).
+5. Vuelve a publicar: Actions → "Publicar" → Run workflow. Para que el APK también reporte, sube una etiqueta nueva.
+
+Este flujo no se ha ejecutado todavía con credenciales reales: si falla, el registro dirá en qué paso.
+
+## Publicarlo desde tu PC (alternativa)
 
 Necesitas una cuenta de Cloudflare. Revisa los límites del plan gratuito antes de empezar.
 

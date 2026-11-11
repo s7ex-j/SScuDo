@@ -3,7 +3,9 @@
 **Pega un mensaje sospechoso y mira qué tiene de raro, parte por parte.**
 Un revisor de estafas digitales pensado para el Perú, con Term ([@s7ex.git](https://www.instagram.com/s7ex.git/)). El análisis ocurre en tu dispositivo: el mensaje no se envía a ningún servidor.
 
-> Estado: **v0.1, prueba.** Funciona, pero todavía no se probó con mensajes reales ni en un celular real. Ver [Estado y límites](#estado-y-límites).
+**Página y descargas: https://s7ex-j.github.io/SScuDo/**
+
+> Estado: **v0.2, prueba.** Funciona, pero todavía no se probó con mensajes reales ni en un celular real. Ver [Estado y límites](#estado-y-límites).
 
 <p>
   <img src="docs/capturas/inicio.png" width="260" alt="Pantalla de inicio de SScuDo">
@@ -18,6 +20,15 @@ Un revisor de estafas digitales pensado para el Perú, con Term ([@s7ex.git](htt
 - **Da un veredicto de tres niveles**: alta probabilidad de estafa, sospechoso o "no encontré señales". Nunca dice "es seguro".
 - **Dice lo que no revisó**, siempre.
 - **Se instala como app** y funciona sin conexión. En Android puede recibir texto desde "Compartir".
+
+## App de Android
+
+Además de revisar mensajes pegados, compartidos o seleccionados, tiene dos protecciones opcionales:
+
+- **Revisor de enlaces:** si la eliges como app para abrir enlaces, mira cada dirección en el momento del toque y la pasa a tu navegador. Solo aparece cuando hay señales.
+- **Aviso de mensajes:** con acceso a notificaciones, lee el texto de cada mensaje que llega y alerta solo ante una estafa clara.
+
+No vigila la pantalla ni usa el servicio de accesibilidad, y no deja procesos corriendo. Detalle, instalación y firma: [docs/ANDROID.md](docs/ANDROID.md).
 
 ## Extensión para el navegador
 
@@ -64,7 +75,7 @@ npm test           # pruebas del motor
 npm run build      # genera dist/
 ```
 
-Para publicarlo en GitHub Pages: Settings → Pages → Source: **GitHub Actions**. El flujo `.github/workflows/pages.yml` hace el resto en cada push a `main`.
+Publicación: cada push a `main` actualiza la página (`pages.yml`); cada etiqueta `v*` compila el APK y la extensión y los sube a Releases (`release.yml`).
 
 ## Cómo decide
 
@@ -84,8 +95,9 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 
 **Sin verificar todavía**
 - Mensajes de estafa reales. Es lo primero que falta.
-- Un celular real: instalación como app y "Compartir → SScuDo" en Android. En iPhone, compartir hacia una app web no está disponible.
-- La publicación en GitHub Pages.
+- **La app de Android compila en CI, pero nadie la ha instalado ni usado en un teléfono.** No se probó ninguna de sus funciones en un dispositivo: ni la interfaz, ni el revisor de enlaces, ni el aviso de mensajes.
+- La app web instalada en un celular real y su "Compartir → SScuDo".
+- El despliegue automático del servicio en Cloudflare (`servicio.yml`) no se ejecutó con credenciales reales.
 - La extensión se probó cargada en Chrome real contra páginas de prueba locales (4 de 4 casos), no contra páginas de phishing reales ni en uso diario. El clic derecho no se probó.
 - El servicio de reportes pasó sus pruebas en local (11 casos, más la app contra él), pero no está publicado: falta crear la cuenta de Cloudflare. La extensión todavía no usa la lista de reportes.
 - La lista de dominios oficiales (`src/engine/brands.ts`) necesita una revisión entidad por entidad.
@@ -109,6 +121,8 @@ Para sumar una campaña, una señal o una marca: [docs/AGREGAR_CAMPANA.md](docs/
 ```
 src/engine/   motor: normalización, señales, enlaces, marcas, campañas, veredicto
 src/App.tsx   interfaz
+index.html    página de presentación (la app web vive en app/)
+android/      app de Android (Kotlin; usa el mismo motor en un WebView sin red)
 extension/    extensión del navegador (usa el mismo motor)
 worker/       servicio de reportes (Cloudflare Workers + D1)
 src/term/     Term (derechos reservados)
