@@ -27,6 +27,29 @@ No hay ningún proceso propio corriendo de fondo ni temporizadores. El revisor d
 2. Acepta "instalar apps desconocidas" para tu navegador y, si Play Protect pregunta, "Instalar de todas formas".
 3. **Android 13 o superior:** para activar el acceso a notificaciones en una app instalada por APK, primero hay que ir a Ajustes → Apps → SScuDo → menú ⋮ → "Permitir ajustes restringidos". Sin eso, el interruptor aparece bloqueado.
 
+## Lista de comprobación en un teléfono
+
+Nadie ha probado todavía el APK en un teléfono real: se compila en GitHub y ahí termina lo comprobado.
+Estas seis pruebas son el paso 1 de `docs/HOJA_DE_RUTA.md`. Usa los mensajes de ejemplo de la propia
+app; no hace falta un mensaje de estafa de verdad.
+
+- [ ] **Abre.** La app inicia y muestra la pantalla "Revisar" con Term.
+- [ ] **Pegar.** Toca un ejemplo de estafa → sale nivel alto con las frases resaltadas. Toca un ejemplo
+      legítimo → "sin señales".
+- [ ] **Compartir.** En WhatsApp o Mensajes, mantén presionado un mensaje → Compartir → SScuDo. La app
+      abre con ese texto ya analizado.
+- [ ] **Seleccionar texto.** En cualquier app, selecciona un texto → menú ⋮ → "Revisar con SScuDo".
+- [ ] **Enlaces.** En la app, panel "Protección automática" → "Revisar enlaces antes de abrirlos". Elige SScuDo como navegador.
+      Toca un enlace normal (por ejemplo de una noticia): debe abrir en tu navegador de siempre sin que
+      notes nada. Luego escribe en Notas `http://viabcp.com.seguridad-clientes.online/login` y tócalo:
+      debe aparecer el aviso antes de abrir.
+- [ ] **Notificaciones.** Panel "Protección automática" → "Avisarme si llega un mensaje de estafa" (en Android 13+ primero
+      "Permitir ajustes restringidos"). Pide a alguien que te envíe por WhatsApp el texto de un ejemplo
+      de estafa: debe llegar una alerta de SScuDo. Un mensaje normal no debe generar nada.
+
+Si algo falla, anota el modelo del teléfono, la versión de Android y qué pasó. Para volver atrás:
+Ajustes → Apps → Apps predeterminadas → Navegador, y elige el de antes.
+
 ## Límites
 
 - Si el motor tarda más de 1,5 s o falla, el enlace se abre igual. SScuDo no debe dejarte sin navegar.

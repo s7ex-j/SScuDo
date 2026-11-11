@@ -99,8 +99,8 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 - La app web instalada en un celular real y su "Compartir → SScuDo".
 - El despliegue automático del servicio en Cloudflare (`servicio.yml`) no se ejecutó con credenciales reales.
 - La extensión se probó cargada en Chrome real contra páginas de prueba locales (4 de 4 casos), no contra páginas de phishing reales ni en uso diario. El clic derecho no se probó.
-- El servicio de reportes pasó sus pruebas en local (11 casos, más la app contra él), pero no está publicado: falta crear la cuenta de Cloudflare. La extensión todavía no usa la lista de reportes.
-- La lista de dominios oficiales (`src/engine/brands.ts`) necesita una revisión entidad por entidad.
+- El servicio de reportes pasó sus pruebas en local (11 casos, más la app contra él), pero no está publicado: faltan los secretos de Cloudflare en el repositorio. La extensión todavía no usa la lista de reportes.
+- Dominios oficiales: 22 entidades tienen su dominio comprobado con fuente y fijado en una prueba; 9 dominios siguen en la lista sin fuente anotada. El detalle está en [docs/DOMINIOS.md](docs/DOMINIOS.md).
 
 **Límites de diseño**
 - No abre enlaces, no consulta la antigüedad de un dominio y no lee imágenes ni audios.
@@ -109,10 +109,14 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 
 ## Lo que sigue
 
-1. Juntar mensajes reales (con datos personales borrados) y medir contra ellos.
-2. Leer capturas de pantalla (texto en imágenes).
-3. Publicar el servicio de reportes y conectar la extensión a la lista.
-4. Tarjeta de resultado como imagen para compartir.
+El orden completo, con quién hace cada paso y cómo se comprueba, está en
+[docs/HOJA_DE_RUTA.md](docs/HOJA_DE_RUTA.md). En corto:
+
+1. Probar el APK y la extensión en uso real.
+2. Firmar el APK y publicar el servicio de reportes; conectar la extensión y Android a la lista.
+3. Medir contra mensajes reales y generalizar las reglas que fallen.
+
+Cómo encajan las piezas: [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
 
 Para sumar una campaña, una señal o una marca: [docs/AGREGAR_CAMPANA.md](docs/AGREGAR_CAMPANA.md).
 

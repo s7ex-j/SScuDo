@@ -5,16 +5,17 @@ import type { Brand } from "./types";
 //
 // IMPORTANTE: un dominio mal puesto aquí hace que un enlace legítimo se marque
 // como imitación. Antes de agregar o cambiar uno, compruébalo en la web o la
-// app oficial de la entidad. Ver docs/AGREGAR_MARCA.md.
+// app oficial de la entidad y anótalo en docs/DOMINIOS.md (qué se comprobó,
+// cuándo y con qué fuente).
 export const BRANDS: Brand[] = [
   // Billeteras
   { id: "yape", name: "Yape", kind: "billetera", mention: /\byape\b/g, hostTokens: ["yape"], loose: true, domains: ["yape.com.pe"] },
   { id: "plin", name: "Plin", kind: "billetera", mention: /\bplin\b/g, hostTokens: ["plin"], domains: ["plin.pe"] },
 
   // Bancos y financieras
-  { id: "bcp", name: "BCP", kind: "banco", mention: /\bbcp\b|\bbanco de credito\b|\bvia ?bcp\b/g, hostTokens: ["viabcp", "bcp"], loose: true, domains: ["viabcp.com"] },
+  { id: "bcp", name: "BCP", kind: "banco", mention: /\bbcp\b|\bbanco de credito\b|\bvia ?bcp\b/g, hostTokens: ["viabcp", "bcp"], loose: true, domains: ["viabcp.com", "bcp.com.pe"] },
   { id: "interbank", name: "Interbank", kind: "banco", mention: /\binterbank\b/g, hostTokens: ["interbank"], loose: true, domains: ["interbank.pe", "interbank.com.pe"] },
-  { id: "bbva", name: "BBVA", kind: "banco", mention: /\bbbva\b/g, hostTokens: ["bbva"], loose: true, domains: ["bbva.pe", "bbva.com"] },
+  { id: "bbva", name: "BBVA", kind: "banco", mention: /\bbbva\b/g, hostTokens: ["bbva"], loose: true, domains: ["bbva.pe", "bbva.com.pe", "bbva.com"] },
   { id: "scotiabank", name: "Scotiabank", kind: "banco", mention: /\bscotiabank\b/g, hostTokens: ["scotiabank"], loose: true, domains: ["scotiabank.com.pe"] },
   { id: "bn", name: "Banco de la Nación", kind: "banco", mention: /\bbanco de la nacion\b/g, hostTokens: ["bancodelanacion", "banconacion"], loose: true, domains: ["bn.com.pe"] },
   { id: "banbif", name: "BanBif", kind: "banco", mention: /\bbanbif\b/g, hostTokens: ["banbif"], loose: true, domains: ["banbif.com.pe"] },
@@ -47,7 +48,7 @@ export const BRANDS: Brand[] = [
     mention: /\bafp\b|\bretiro de (afp|fondos|la cts|cts)\b|\b(retiro|liberacion) de (tu |su )?cts\b/g,
     hostTokens: ["afp"],
     loose: true,
-    domains: ["afpintegra.pe", "prima.com.pe", "afphabitat.com.pe", "profuturo.com.pe", "gob.pe"],
+    domains: ["afpintegra.pe", "prima.com.pe", "afphabitat.com.pe", "profuturo.com.pe", "asociacionafp.pe", "solicitaretiroafp.pe", "afpnet.com.pe", "gob.pe"],
   },
 
   // Envíos
@@ -56,7 +57,7 @@ export const BRANDS: Brand[] = [
   { id: "dhl", name: "DHL", kind: "courier", mention: /\bdhl\b/g, hostTokens: ["dhl"], domains: ["dhl.com"] },
 
   // Telefonía
-  { id: "claro", name: "Claro", kind: "telco", mention: /(^|\n)\s*claro\s*:|\bclaro (peru|te informa|te regala)\b/g, hostTokens: ["claroperu", "miclaro"], loose: true, domains: ["claro.com.pe"] },
+  { id: "claro", name: "Claro", kind: "telco", mention: /(^|\n)\s*claro\s*:|\bclaro (peru|te informa|te regala)\b/g, hostTokens: ["claroperu", "miclaro"], loose: true, domains: ["claro.com.pe", "tiendaclaro.pe"] },
   { id: "movistar", name: "Movistar", kind: "telco", mention: /\bmovistar\b/g, hostTokens: ["movistar"], loose: true, domains: ["movistar.com.pe"] },
   { id: "entel", name: "Entel", kind: "telco", mention: /\bentel\b/g, hostTokens: ["entel"], domains: ["entel.pe"] },
   { id: "bitel", name: "Bitel", kind: "telco", mention: /\bbitel\b/g, hostTokens: ["bitel"], domains: ["bitel.com.pe"] },
