@@ -75,7 +75,7 @@ npm test           # pruebas del motor
 npm run build      # genera dist/
 ```
 
-Publicación: cada push a `main` actualiza la página (`pages.yml`); cada etiqueta `v*` compila el APK y la extensión y los sube a Releases (`release.yml`).
+Publicación: cada push a `main` actualiza la página (`pages.yml`); cada cambio del archivo `VERSION` compila el APK y la extensión y los sube a Releases (`release.yml`).
 
 ## Cómo decide
 

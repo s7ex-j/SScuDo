@@ -2,7 +2,8 @@
 # Releases con nombres fijos (sscudo.apk, sscudo-extension.zip), que son los
 # que enlaza la página de presentación.
 #
-# Se dispara al subir una etiqueta v* (por ejemplo v0.2.0) o a mano.
+# Se dispara cuando cambia el archivo VERSION en main (basta editar el número y
+# hacer push), al subir una etiqueta v*, o a mano desde la pestaña Actions.
 #
 # Firma del APK (recomendado): crea estos secretos en Settings → Secrets → Actions
 #   ANDROID_KEYSTORE_B64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
@@ -11,6 +12,8 @@
 name: Versión
 on:
   push:
+    branches: [main]
+    paths: ["VERSION"]
     tags: ["v*"]
   workflow_dispatch:
     inputs:
@@ -23,10 +26,15 @@ jobs:
   publicar:
     runs-on: ubuntu-latest
     env:
-      ETIQUETA: ${{ github.event.inputs.etiqueta || github.ref_name }}
       KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
     steps:
       - uses: actions/checkout@v4
+      - name: Número de versión
+        run: |
+          if [ -n "${{ github.event.inputs.etiqueta }}" ]; then E="${{ github.event.inputs.etiqueta }}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then E="${{ github.ref_name }}"
+          else E="v$(tr -d ' \n\r' < VERSION)"; fi
+          echo "ETIQUETA=$E" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: 22
