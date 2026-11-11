@@ -249,24 +249,152 @@ h1 {
   padding-bottom: 128px;
 }
 
-.telefono {
+/* Teléfono genérico dibujado con CSS: marco metálico, botones laterales,
+   recorte de la cámara y barra inferior. */
+.telefono,
+.marco-telefono {
   position: relative;
-  border-radius: 38px;
-  padding: 12px;
-  background: linear-gradient(160deg, #343b52, #1a1e2b 55%);
+  padding: 11px;
+  border-radius: 3.3rem;
+  background: linear-gradient(135deg, #6b7386 0%, #2a2f3c 22%, #0b0d12 50%, #2f3443 78%, #7a8296 100%);
   box-shadow:
-    0 50px 110px rgba(0, 0, 0, 0.62),
-    0 0 0 1px rgba(255, 255, 255, 0.07) inset;
+    0 0 0 1.5px #05060a,
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.2),
+    0 60px 110px -20px rgba(0, 0, 0, 0.75),
+    0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+
+.telefono {
   transform: rotate(1.6deg);
+}
+
+.tel-boton {
+  position: absolute;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #14161d, #565d70 60%, #23272e);
+}
+
+.tel-boton.b1 {
+  left: -3.5px;
+  top: 19%;
+  height: 4.5%;
+}
+
+.tel-boton.b2 {
+  left: -3.5px;
+  top: 27%;
+  height: 8.5%;
+}
+
+.tel-boton.b3 {
+  right: -3.5px;
+  top: 29%;
+  height: 12.5%;
+}
+
+.tel-pantalla {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2.65rem;
+  background: #0d1017;
+  box-shadow: 0 0 0 3.5px #030407;
+}
+
+/* Reflejo del vidrio. */
+.tel-pantalla::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 24%);
+}
+
+.tel-estado {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 46px;
+  padding: 6px 30px 0 38px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tel-isla {
+  position: absolute;
+  left: 50%;
+  top: 13px;
+  width: 30%;
+  height: 26px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #000;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.tel-isla::after {
+  content: "";
+  position: absolute;
+  right: 14%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2b3a55, #0b0f18 70%);
+}
+
+.tel-iconos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tel-iconos .senal {
+  width: 16px;
+  height: 10px;
+  background: linear-gradient(90deg, currentColor 18%, transparent 18% 27%, currentColor 27% 45%, transparent 45% 54%, currentColor 54% 72%, transparent 72% 81%, currentColor 81%);
+  clip-path: polygon(0 100%, 0 60%, 100% 0, 100% 100%);
+}
+
+.tel-iconos .bateria {
+  position: relative;
+  width: 22px;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+}
+
+.tel-iconos .bateria::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  right: 28%;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.tel-barra {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  z-index: 2;
+  width: 36%;
+  height: 5px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(244, 238, 226, 0.85);
 }
 
 .tel-cabeza {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 18px 12px;
-  background: #0d1017;
-  border-radius: 28px 28px 0 0;
+  padding: 8px 18px 12px;
+  border-bottom: 1px solid var(--line);
   color: var(--text-2);
   font-size: 0.9rem;
   font-weight: 600;
@@ -281,10 +409,8 @@ h1 {
 
 .tel-cuerpo {
   position: relative;
-  min-height: 430px;
-  padding: 18px 14px 14px;
-  background: #0d1017;
-  border-radius: 0 0 28px 28px;
+  min-height: 420px;
+  padding: 18px 14px 30px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -730,15 +856,12 @@ code {
 .marco-telefono {
   width: min(100%, 300px);
   margin-inline: auto;
-  padding: 10px;
-  border-radius: 34px;
-  background: linear-gradient(160deg, #343b52, #1a1e2b 55%);
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
 }
 
 .marco-telefono img,
 .aviso-android {
-  border-radius: 25px;
+  border-radius: 2.65rem;
+  box-shadow: 0 0 0 3.5px #030407;
 }
 
 .aviso-android {
