@@ -17,12 +17,17 @@ Cada uno aparece en un documento de la propia entidad, del Estado o de otra enti
 | Yape | `yape.com.pe` | Citado por el BCRP (revista Moneda n.º 201) |
 | Plin | `plin.pe` | Términos y condiciones de BBVA y de Financiera Confianza |
 | Interbank | `interbank.pe` | Web del banco |
+| Interbank | `interbank.com.pe` | Citado en un estudio de medios de pago de PromPerú (`repositorio.promperu.gob.pe`). No se comprobó desde aquí que el dominio siga respondiendo |
+| Mibanco | `mibanco.com.pe` | Tarifario de depósitos alojado en el dominio, emitido bajo la Res. SBS 3274-2017; registro LEI corroborado con SUNAT (RUC 20382036655) |
 | BBVA | `bbva.pe`, `bbva.com.pe`, `bbva.com` | Documentos alojados en los tres |
 | Scotiabank | `scotiabank.com.pe` | Web del banco |
 | Banco de la Nación | `bn.com.pe` | Documentos de Multired Virtual |
 | BanBif | `banbif.com.pe` | Web del banco |
 | Banco Pichincha | `pichincha.pe` | Web del banco |
 | Banco Falabella | `bancofalabella.pe` | Web del banco |
+| Falabella (tienda) | `falabella.com.pe` | Documentos para inversionistas de Saga Falabella alojados en el dominio; pie de Falabella.com S.A.C. |
+| Banco Ripley | `bancoripley.com.pe` | Contratos aprobados por la SBS alojados en el dominio (productos financieros, mayo 2022) |
+| Ripley (tienda) | `ripley.com.pe` | Condiciones de membresía de la Tarjeta Ripley, PDF de Banco Ripley (enlaza `simple.ripley.com.pe`) |
 | AFP Integra | `afpintegra.pe` | Preguntas frecuentes de la Asociación de AFP |
 | Prima AFP | `prima.com.pe` | Agencia virtual |
 | AFP Habitat | `afphabitat.com.pe` | Asociación de AFP; presentación ante el Congreso |
@@ -31,6 +36,10 @@ Cada uno aparece en un documento de la propia entidad, del Estado o de otra enti
 | AFPnet (empleadores) | `afpnet.com.pe` | Guías de trámite |
 | Estado | cualquier `*.gob.pe` | Dominio reservado al Estado peruano |
 | Serpost | `serpost.com.pe` | Web y correos de atención |
+| Olva Courier | `olvacourier.com` | Manual de embalaje COM-M-03 y bases de promociones de Olva Courier S.A.C. (RUC 20100686814) alojados en el dominio |
+| DHL | `dhl.com` | Guía de aduanas de DHL Express para Perú (enlaza `dhl.com/pe-es`); aviso legal de DHL Express Perú S.A.C. en ese dominio |
+| Mercado Libre | `mercadolibre.com.pe`, `mercadolibre.com` | Pie de MercadoLibre Perú S.R.L.; `api.mercadolibre.com` en la documentación oficial para desarrolladores |
+| Mercado Pago | `mercadopago.com.pe` | Portal de desarrolladores con pie de MercadoLibre Perú S.R.L.; citado como fuente en un estudio de PromPerú |
 | Claro | `claro.com.pe`, `tiendaclaro.pe` | Listados de tráfico del sector |
 | Movistar | `movistar.com.pe` | Listados de tráfico del sector |
 | Entel | `entel.pe` | Listados de tráfico del sector |
@@ -38,10 +47,8 @@ Cada uno aparece en un documento de la propia entidad, del Estado o de otra enti
 
 ## En la lista, sin comprobar con fuente
 
-Están en `brands.ts` porque son los que se usan, pero falta anotar una fuente. Paso 3 de la hoja de ruta.
-
-`interbank.com.pe`, `mibanco.com.pe`, `falabella.com.pe`, `ripley.com.pe`, `bancoripley.com.pe`,
-`olvacourier.com`, `dhl.com`, `mercadolibre.com.pe`, `mercadopago.com.pe`.
+Ninguno (vaciada el 11 de noviembre de 2026, paso 3 de la hoja de ruta). Todo dominio nuevo de
+`brands.ts` entra directamente a la tabla de arriba con su fuente.
 
 ## Conocidos que NO están
 

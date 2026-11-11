@@ -8,7 +8,7 @@ Claude Code con el repo · `J+C` = Jharol entrega algo y Claude lo integra.
 
 ## Estado al 11 de noviembre de 2026
 
-Publicado y funcionando: motor (112 pruebas), app web y PWA, página de presentación, extensión,
+Publicado y funcionando: motor (122 pruebas), app web y PWA, página de presentación, extensión,
 APK v0.2.0. Construido pero **no comprobado en condiciones reales**: el APK en un teléfono, el servicio
 de reportes en Cloudflare, el menú contextual de la extensión, "Compartir" hacia la PWA.
 
@@ -18,7 +18,7 @@ de reportes en Cloudflare, el menú contextual de la extensión, "Compartir" hac
 |---|---|---|---|
 | 1 | J | Instalar `sscudo.apk` en un Android (en Android 13+: Ajustes → Apps → SScuDo → ⋮ → "Permitir ajustes restringidos" antes de activar notificaciones). Seguir la lista de `docs/ANDROID.md`, sección "Lista de comprobación". | Las 6 casillas marcadas. Lo que falle se anota como issue con captura. |
 | 2 | J | Instalar la extensión desde `sscudo-extension.zip` (chrome://extensions → modo desarrollador → "Cargar descomprimida"). Abrir el banco real, seleccionar un texto y usar clic derecho → "Revisar con SScuDo". | El banco sale como oficial; el menú abre el resultado. |
-| 3 | C | Buscar fuente para los dominios de la sección "sin comprobar" de `docs/DOMINIOS.md`; mover cada uno a la tabla o quitarlo de `brands.ts`. | `npm test` pasa; la sección queda vacía. |
+| 3 | C | ~~Buscar fuente para los dominios de la sección "sin comprobar" de `docs/DOMINIOS.md`; mover cada uno a la tabla o quitarlo de `brands.ts`.~~ **Hecho el 11/11/2026**: los 9 (y `mercadolibre.com`) tienen fuente. | `npm test` pasa; la sección queda vacía. |
 | 4 | C | Corregir lo que falló en 1 y 2. | Jharol repite solo el punto que falló. |
 
 ## Fase 2 — Firmar y encender los reportes
