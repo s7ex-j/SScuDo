@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#151923" />
+    <meta name="theme-color" content="#10131b" />
     <title>SScuDo: mira qué tiene de raro ese mensaje</title>
     <meta name="description" content="Pega un mensaje sospechoso y SScuDo te muestra, parte por parte, por qué puede ser una estafa. Hecho para el Perú. Gratis, de código abierto y sin enviar tus mensajes a ningún lado." />
     <meta property="og:title" content="SScuDo: mira qué tiene de raro ese mensaje" />
@@ -15,62 +15,158 @@
   <body>
     <header class="barra">
       <a class="marca" href="./">
-        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
           <path d="M12 2.5 20 5.4v6.2c0 4.8-3.3 8.3-8 9.9-4.7-1.6-8-5.1-8-9.9V5.4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
           <path d="m8.6 9.4 2.6 2.3-2.6 2.3M12.6 14.4h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         <span>SScuDo</span>
       </a>
       <nav>
+        <a href="#enlace">El truco del enlace</a>
         <a href="#descargar">Descargar</a>
-        <a href="#como">Cómo funciona</a>
         <a href="https://github.com/s7ex-j/SScuDo">GitHub</a>
+        <a class="nav-boton" href="./app/">Abrir la app</a>
       </nav>
     </header>
 
     <main>
+      <!-- ───────── Portada: el mensaje llega, SScuDo lo lee y lo marca -->
       <section class="portada">
         <div class="portada-texto">
-          <h1>Antes de tocar ese enlace, mira a dónde lleva.</h1>
-          <p>
-            SScuDo revisa el mensaje que te llegó y te muestra, parte por parte, qué tiene de raro. Reconoce las estafas que circulan en el Perú: el falso bono, la cuenta bloqueada, el código de WhatsApp, el "cambié de número".
+          <p class="origen">Hecho en el Perú, para las estafas de aquí</p>
+          <h1>Ese mensaje no es de tu banco.</h1>
+          <p class="bajada">
+            Pégalo en SScuDo y mira, parte por parte, qué tiene de raro: el enlace que finge ser otro, la urgencia, el pedido de claves. Sin abrir nada y sin que el mensaje salga de tu celular.
           </p>
           <div class="acciones">
-            <a class="boton" href="./app/">Revisar un mensaje ahora</a>
-            <a class="enlace" href="#descargar">o instálalo en tu celular o tu navegador</a>
+            <a class="boton grande" href="./app/">Revisar un mensaje</a>
+            <a class="boton fantasma" href="#descargar">Instalar</a>
           </div>
-          <p class="pequeno">Gratis. Sin registro. El análisis ocurre en tu dispositivo.</p>
+          <ul class="garantias">
+            <li>Gratis y sin registro</li>
+            <li>Código abierto</li>
+            <li>Funciona sin conexión</li>
+          </ul>
         </div>
 
-        <figure class="muestra" aria-label="Ejemplo de un mensaje revisado por SScuDo">
-          <div class="muestra-veredicto">
-            <span class="medidor"><i></i><i></i><i></i></span>
-            <strong>Alta probabilidad de estafa</strong>
+        <div class="demo" id="demo" aria-label="Demostración: SScuDo marca un mensaje de estafa">
+          <div class="telefono">
+            <div class="tel-cabeza"><i></i><span>Mensajes</span></div>
+            <div class="tel-cuerpo">
+              <p class="burbuja">
+                BCP: Tu <mark class="arena m1">cuenta ha sido bloqueada</mark> por <mark class="arena m2">actividad sospechosa</mark>. <mark class="ambar m3">Verifica tus datos</mark> en
+                <mark class="rojo m4">https://viabcp.com.seguridad-clientes.online/login</mark>
+                <time>10:41</time>
+              </p>
+              <div class="escaner" aria-hidden="true"></div>
+              <div class="fallo">
+                <span class="medidor"><i></i><i></i><i></i></span>
+                <strong>Alta probabilidad de estafa</strong>
+                <p>El dominio real es <b>seguridad-clientes.online</b>, no el del BCP.</p>
+              </div>
+            </div>
           </div>
-          <p class="muestra-mensaje">
-            BCP: Tu <mark class="arena">cuenta ha sido bloqueada</mark> por <mark class="arena">actividad sospechosa</mark>. <mark class="ambar">Verifica tus datos</mark> en
-            <mark class="rojo">https://viabcp.com.seguridad-clientes.online/login</mark>
-          </p>
-          <div class="muestra-url">
-            <span>https://viabcp.com.</span><b>seguridad-clientes.online</b><span>/login</span>
+
+          <div class="term-demo" aria-hidden="true">
+            <p class="globo globo-antes">Déjame leerlo…</p>
+            <p class="globo globo-despues">No abras nada.</p>
+            <svg class="term-cara term-antes" viewBox="0 0 32 32" shape-rendering="crispEdges">
+              <path d="M8 3h16v2h2v2h2v20h-3v3h-3v-3h-3v3h-4v-3h-3v3H9v-3H4V7h2V5h2V3Z" fill="#17A653" />
+              <path d="M8 3h16v2h2v2H6V5h2V3Z" fill="#33D777" />
+              <path d="M25 9h3v18h-3Z" fill="#0F8442" />
+              <rect x="6" y="9" width="20" height="16" fill="#0E3B25" />
+              <rect x="7" y="10" width="18" height="14" fill="#062A22" />
+              <g shape-rendering="geometricPrecision">
+                <circle cx="12" cy="15" r="4.2" fill="#CFF6FF" fill-opacity=".14" stroke="#0C0F14" stroke-width="1.5" />
+                <circle cx="20" cy="15" r="4.2" fill="#CFF6FF" fill-opacity=".14" stroke="#0C0F14" stroke-width="1.5" />
+                <path d="M2.5 14.5h5.3M24.2 14.5h5.3M15.6 14.4h.8" stroke="#0C0F14" stroke-width="1.3" />
+              </g>
+              <g fill="#2DD4EE" class="ojos-leen"><rect x="11" y="13" width="2" height="4" /><rect x="19" y="13" width="2" height="4" /></g>
+              <g fill="#E6FFF1"><path d="M13 19h1v1h1v1h-1v1h-1v-1h1v-1h-1Z" /><rect x="16" y="21" width="3" height="1" /></g>
+            </svg>
+            <svg class="term-cara term-despues" viewBox="0 0 32 32" shape-rendering="crispEdges">
+              <path d="M8 3h16v2h2v2h2v20h-3v3h-3v-3h-3v3h-4v-3h-3v3H9v-3H4V7h2V5h2V3Z" fill="#17A653" />
+              <path d="M8 3h16v2h2v2H6V5h2V3Z" fill="#33D777" />
+              <path d="M25 9h3v18h-3Z" fill="#0F8442" />
+              <rect x="6" y="9" width="20" height="16" fill="#0E3B25" />
+              <rect x="7" y="10" width="18" height="14" fill="#3A0F1C" />
+              <g shape-rendering="geometricPrecision">
+                <circle cx="12" cy="15" r="4.2" fill="#CFF6FF" fill-opacity=".14" stroke="#0C0F14" stroke-width="1.5" />
+                <circle cx="20" cy="15" r="4.2" fill="#CFF6FF" fill-opacity=".14" stroke="#0C0F14" stroke-width="1.5" />
+                <path d="M2.5 14.5h5.3M24.2 14.5h5.3M15.6 14.4h.8" stroke="#0C0F14" stroke-width="1.3" />
+              </g>
+              <g fill="#FFD9E0"><rect x="10" y="12" width="4" height="6" /><rect x="18" y="12" width="4" height="6" /></g>
+              <g fill="#FF5C7A"><rect x="14" y="19" width="1" height="2" /><rect x="14" y="22" width="1" height="1" /><rect x="17" y="19" width="1" height="2" /><rect x="17" y="22" width="1" height="1" /></g>
+            </svg>
           </div>
-          <figcaption>
-            El dominio real es <strong>seguridad-clientes.online</strong>. Lo que va antes lo escribe quien armó el enlace: puede decir cualquier cosa.
-          </figcaption>
-        </figure>
+          <button type="button" class="repetir" id="repetir">Ver de nuevo</button>
+        </div>
       </section>
 
-      <section id="descargar" class="seccion">
-        <h2>Tres formas de usarlo</h2>
-        <div class="formas">
-          <article>
-            <h3>En la web</h3>
-            <p>Abre la página, pega el mensaje y listo. Funciona en cualquier celular o computadora, y se puede instalar como app desde el menú del navegador.</p>
-            <a class="boton" href="./app/">Abrir SScuDo</a>
+      <!-- ───────── Estafas que reconoce -->
+      <section class="cinta" aria-label="Estafas que SScuDo reconoce">
+        <p>Reconoce las estafas que más circulan:</p>
+        <ul>
+          <li>El bono que no existe</li>
+          <li>"Tu cuenta ha sido bloqueada"</li>
+          <li>El código que "llegó por error"</li>
+          <li>"Hola, cambié de número"</li>
+          <li>El trabajo de dar likes</li>
+          <li>El paquete retenido</li>
+          <li>El retiro de AFP o CTS</li>
+          <li>El reembolso automático</li>
+          <li>El yapeo "por error"</li>
+          <li>La multa a nombre del Estado</li>
+          <li>La inversión que siempre gana</li>
+          <li>El "asesor" que pide instalar una app</li>
+        </ul>
+      </section>
+
+      <!-- ───────── La pieza central: anatomía de un enlace -->
+      <section id="enlace" class="anatomia">
+        <h2>El truco está en el enlace. Así se lee uno.</h2>
+        <p class="anatomia-intro">Una dirección web se lee de derecha a izquierda. Lo único que dice de quién es la página es el último tramo antes de la primera barra.</p>
+
+        <div class="url-grande" translate="no">
+          <span class="trozo t-adorno" tabindex="0">https://viabcp.com.</span><span class="trozo t-real" tabindex="0">seguridad-clientes.online</span><span class="trozo t-ruta" tabindex="0">/login</span>
+        </div>
+
+        <div class="url-notas">
+          <article class="n-adorno">
+            <h3>Decoración</h3>
+            <p>Lo escribe quien armó el enlace. Puede decir "viabcp.com", "yape" o "gob.pe" sin serlo. Está ahí para que no sigas leyendo.</p>
           </article>
-          <article>
+          <article class="n-real">
+            <h3>El dominio real</h3>
+            <p>Esto es lo que alguien registró y controla. Aquí no es el BCP: es un sitio cualquiera con una terminación barata.</p>
+          </article>
+          <article class="n-ruta">
+            <h3>La ruta</h3>
+            <p>Una carpeta dentro de ese sitio. Tampoco prueba nada: "/login" lo puede escribir cualquiera.</p>
+          </article>
+        </div>
+        <p class="anatomia-cierre">SScuDo hace esta lectura por ti y compara el dominio real con los dominios oficiales de bancos, billeteras y entidades del Perú.</p>
+      </section>
+
+      <!-- ───────── Tres formas de usarlo -->
+      <section id="descargar" class="formas">
+        <h2>Úsalo donde te llegan las estafas</h2>
+
+        <article class="forma">
+          <div class="forma-texto">
+            <h3>En la web, sin instalar nada</h3>
+            <p>Abre la página, pega el mensaje y listo. Funciona en cualquier celular o computadora. Desde el menú del navegador puedes agregarla a tu pantalla de inicio.</p>
+            <a class="boton" href="./app/">Abrir SScuDo</a>
+          </div>
+          <div class="forma-imagen">
+            <div class="marco-telefono"><img src="./capturas/app-resultado.png" alt="SScuDo marcando un mensaje y mostrando el dominio real del enlace" width="520" height="920" /></div>
+          </div>
+        </article>
+
+        <article class="forma al-reves">
+          <div class="forma-texto">
             <h3>App para Android</h3>
-            <p>Además de revisar mensajes, puede mirar cada enlace antes de abrirlo y avisarte cuando te llega un mensaje con marcas de estafa. Las dos funciones son opcionales.</p>
+            <p>Puede revisar cada enlace en el momento en que lo tocas y avisarte cuando te llega un mensaje con marcas claras de estafa. Las dos funciones son opcionales y no dejan nada corriendo de fondo.</p>
             <a class="boton" href="https://github.com/s7ex-j/SScuDo/releases/latest/download/sscudo.apk">Descargar APK</a>
             <details>
               <summary>Cómo instalar un APK</summary>
@@ -81,10 +177,28 @@
                 <li>En Android 13 o superior, para activar el aviso de mensajes: Ajustes, Apps, SScuDo, menú de tres puntos, "Permitir ajustes restringidos".</li>
               </ol>
             </details>
-          </article>
-          <article>
+            <p class="nota">No vigila tu pantalla ni usa el permiso de accesibilidad, que es el que usan los troyanos bancarios.</p>
+          </div>
+          <div class="forma-imagen">
+            <div class="marco-telefono">
+              <div class="aviso-android">
+                <small>SScuDo detuvo este enlace</small>
+                <strong>Esta página imita a BCP</strong>
+                <p>El dominio real es seguridad-clientes.online. No escribas claves, códigos ni datos de tarjeta aquí.</p>
+                <small>Dominio real</small>
+                <code>seguridad-clientes.online</code>
+                <span class="falso-boton">No abrir</span>
+                <span class="falso-enlace">Abrir de todos modos</span>
+              </div>
+            </div>
+            <p class="pie-imagen">Ilustración del aviso al tocar un enlace</p>
+          </div>
+        </article>
+
+        <article class="forma">
+          <div class="forma-texto">
             <h3>Extensión para Chrome</h3>
-            <p>Te avisa en la propia página cuando el sitio que abriste imita a un banco, una billetera o una entidad pública. También sirve en Edge y Brave.</p>
+            <p>Te avisa en la propia página cuando el sitio que abriste imita a un banco, una billetera o una entidad pública. También funciona en Edge y Brave.</p>
             <a class="boton" href="https://github.com/s7ex-j/SScuDo/releases/latest/download/sscudo-extension.zip">Descargar extensión</a>
             <details>
               <summary>Cómo instalarla</summary>
@@ -94,57 +208,61 @@
                 <li>Pulsa "Cargar descomprimida" y elige la carpeta.</li>
               </ol>
             </details>
-          </article>
+          </div>
+          <div class="forma-imagen">
+            <div class="marco-navegador">
+              <div class="nav-cabeza"><i></i><i></i><i></i><span>viabcp.com.seguridad-clientes.online</span></div>
+              <img src="./capturas/extension-aviso.png" alt="La extensión mostrando un aviso sobre una página que imita a un banco" width="1000" height="582" />
+            </div>
+            <p class="pie-imagen">Captura real, sobre una página de prueba</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ───────── Privacidad -->
+      <section class="privacidad">
+        <h2>Tu mensaje no sale de tu dispositivo.</h2>
+        <div class="privacidad-rejilla">
+          <p>No hay servidor que lo reciba. El análisis son reglas que corren en tu celular o tu navegador, y cualquiera puede leerlas en el código.</p>
+          <ul>
+            <li>Sin cuentas, anuncios ni rastreadores.</li>
+            <li>Si decides reportar una estafa, se envía solo el dominio y el tipo de estafa. Nunca el mensaje, tu número ni tu IP.</li>
+            <li>La extensión mira la dirección, el título y si la página pide una clave. No lee lo que escribes ni guarda tu historial.</li>
+          </ul>
         </div>
       </section>
 
-      <section id="como" class="seccion dos">
-        <div>
-          <h2>Cómo funciona</h2>
-          <p>SScuDo no adivina. Aplica reglas que cualquiera puede leer en el código, y por eso siempre te dice por qué marcó algo.</p>
-          <ol class="pasos">
-            <li><strong>Lee el mensaje sin abrir nada.</strong> Busca presión, promesas, amenazas y pedidos de claves, códigos o dinero.</li>
-            <li><strong>Desarma cada enlace.</strong> Separa el dominio real del resto y lo compara con los dominios oficiales de bancos, billeteras y entidades del Perú.</li>
-            <li><strong>Lo compara con estafas conocidas.</strong> Si se parece a una, te explica cómo funciona y qué hacer.</li>
-            <li><strong>Te da un veredicto de tres niveles.</strong> Alta probabilidad de estafa, sospechoso o "no encontré señales". Nunca dice "es seguro".</li>
-          </ol>
-        </div>
-        <div>
-          <h2>Lo que hace con tus datos</h2>
-          <ul class="lista">
-            <li>El mensaje que pegas <strong>no sale de tu dispositivo</strong>. No hay servidor que lo reciba.</li>
-            <li>Si decides reportar una estafa, se envía <strong>solo el dominio y el tipo de estafa</strong>. Nunca el mensaje, tu número ni tu IP.</li>
-            <li>La extensión solo mira la dirección, el título y si la página pide una clave. No lee lo que escribes ni guarda tu historial.</li>
-            <li>No hay cuentas, anuncios ni rastreadores.</li>
-          </ul>
-        </div>
+      <!-- ───────── Límites -->
+      <section class="limites">
+        <h2>Lo que SScuDo no puede hacer</h2>
+        <ul>
+          <li><strong>Nunca dice "es seguro".</strong> Su nivel más bajo es "no encontré señales".</li>
+          <li><strong>No abre los enlaces</strong> ni sabe desde cuándo existe un dominio.</li>
+          <li><strong>No lee imágenes, audios ni llamadas.</strong></li>
+          <li><strong>Reconoce patrones conocidos.</strong> Una estafa nueva o bien escrita puede pasar sin marca.</li>
+          <li><strong>No reemplaza a tu banco ni a la Policía.</strong> Si ya diste tus datos, llama a tu banco primero.</li>
+        </ul>
       </section>
 
-      <section class="seccion dos">
-        <div>
-          <h2>La app de Android no vigila tu pantalla</h2>
-          <p>Leer todo lo que aparece en la pantalla exige el permiso de accesibilidad, el mismo que usan los troyanos bancarios. Algunas apps de bancos lo detectan y se bloquean. Por eso SScuDo protege de otra forma:</p>
-          <ul class="lista">
-            <li><strong>Enlaces:</strong> si la eliges como app para abrir enlaces, revisa cada uno en el momento del toque y lo pasa a tu navegador. No corre en segundo plano.</li>
-            <li><strong>Mensajes:</strong> si le das acceso a notificaciones, lee el texto de cada mensaje que llega y solo te interrumpe cuando ve una estafa clara.</li>
-            <li><strong>A pedido:</strong> selecciona un texto en cualquier app y elige "Revisar con SScuDo", o usa Compartir.</li>
-          </ul>
-        </div>
-        <div>
-          <h2>Lo que no puede hacer</h2>
-          <ul class="lista">
-            <li>No abre los enlaces ni sabe desde cuándo existe un dominio.</li>
-            <li>No lee imágenes, audios ni llamadas.</li>
-            <li>Reconoce patrones conocidos. Una estafa nueva o bien escrita puede pasar sin marca.</li>
-            <li>No reemplaza a tu banco ni a la Policía. Si ya diste tus datos, llama a tu banco primero.</li>
-          </ul>
-        </div>
+      <section class="cierre">
+        <h2>¿Tienes un mensaje raro ahora mismo?</h2>
+        <a class="boton grande" href="./app/">Revísalo</a>
       </section>
     </main>
 
     <footer class="pie">
       <p>SScuDo es un proyecto de <a href="https://www.instagram.com/s7ex.git/">@s7ex.git</a>, de código abierto en <a href="https://github.com/s7ex-j/SScuDo">GitHub</a>.</p>
-      <p>Si encuentras un mensaje de estafa que SScuDo no detecta, o uno normal que marca por error, cuéntalo en <a href="https://github.com/s7ex-j/SScuDo/issues">Issues</a>.</p>
+      <p>¿Un mensaje de estafa que no detecta, o uno normal que marca por error? Cuéntalo en <a href="https://github.com/s7ex-j/SScuDo/issues">Issues</a>.</p>
     </footer>
+
+    <script>
+      // "Ver de nuevo": reinicia la animación de la portada.
+      document.getElementById("repetir").addEventListener("click", function () {
+        var d = document.getElementById("demo");
+        d.classList.add("pausa");
+        void d.offsetWidth;
+        d.classList.remove("pausa");
+      });
+    </script>
   </body>
 </html>
