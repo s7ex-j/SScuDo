@@ -7,8 +7,8 @@ import type { TermMood } from "./term/Term";
 import { EJEMPLOS } from "./ui/ejemplos";
 import { cargarComunidad, enviarReporte, reportesActivos } from "./reportes";
 import type { Comunidad } from "./reportes";
-import { revisarPagina, vistaPreviaActiva } from "./pagina";
-import type { PaginaRevisada, Respuesta } from "./pagina";
+import { analizarLocal, revisarPagina, vistaPreviaActiva } from "./pagina";
+import type { PaginaRevisada, Respuesta, RevisionLocal } from "./pagina";
 
 type Vista = "revisar" | "campanas" | "pagina";
 
@@ -21,15 +21,21 @@ interface PuenteAndroid {
   /** ¿Hay texto copiado? Solo mira si existe, sin leerlo. */
   hayCopiado?(): boolean;
   leerCopiado?(): string;
+  /** Abre la página en el navegador aislado de la app y vuelve con #revision=. */
+  revisarPagina?(url: string): void;
+  tomarRevision?(): string;
 }
 const android = (window as unknown as { SScuDoAndroid?: PuenteAndroid }).SScuDoAndroid;
 
-/** Lo que llega en el fragmento (#texto=... o #pagina=...). El fragmento nunca viaja a un servidor. */
-function delFragmento(): { tipo: "texto" | "pagina"; valor: string } | null {
-  const m = /^#(texto|pagina)=(.*)$/s.exec(location.hash);
+/** Se puede revisar una página: en Android, en su navegador aislado; en la web, con el servicio. */
+const puedeRevisarPaginas = !!android?.revisarPagina || vistaPreviaActiva;
+
+/** Lo que llega en el fragmento (#texto=, #pagina= o #revision=). El fragmento nunca viaja a un servidor. */
+function delFragmento(): { tipo: "texto" | "pagina" | "revision"; valor: string } | null {
+  const m = /^#(texto|pagina|revision)=(.*)$/s.exec(location.hash);
   if (!m) return null;
   try {
-    return { tipo: m[1] as "texto" | "pagina", valor: decodeURIComponent(m[2]) };
+    return { tipo: m[1] as "texto" | "pagina" | "revision", valor: decodeURIComponent(m[2]) };
   } catch {
     return null;
   }
@@ -230,9 +236,9 @@ function Anatomia({ u, comunidad, alRevisar }: { u: UrlReport; comunidad: Comuni
         )}
       </p>
       {rep && <p className="anatomia-comunidad">{rep.n} personas reportaron este dominio en los últimos 30 días. Son reportes de usuarios, no una verificación.</p>}
-      {completa && vistaPreviaActiva && !u.official && (
+      {completa && puedeRevisarPaginas && !u.official && (
         <button type="button" className="boton-borde" onClick={() => alRevisar(completa)}>
-          {acortado ? "Ver a dónde lleva" : "Ver la página sin abrirla"}
+          {acortado ? "Ver a dónde lleva" : "Revisar la página"}
         </button>
       )}
     </div>
@@ -284,17 +290,24 @@ function hostDe(url: string): string {
   }
 }
 
-/** Resultado de POST /pagina: captura, camino del enlace y lo que dice el código. */
-function RevisionPagina({ url, alVolver }: { url: string; alVolver: () => void }) {
-  const [resp, setResp] = useState<Respuesta | null>(null);
+type FuentePagina = { tipo: "servicio"; url: string } | { tipo: "local"; r: PaginaRevisada };
+
+/** Revisión de una página: hecha en el teléfono (Android) o por el servicio (web). */
+function RevisionPagina({ fuente, alVolver }: { fuente: FuentePagina; alVolver: () => void }) {
+  const url = fuente.tipo === "local" ? fuente.r.pedida : fuente.url;
+  const [resp, setResp] = useState<Respuesta | null>(fuente.tipo === "local" ? { ok: true, r: fuente.r } : null);
   useEffect(() => {
+    if (fuente.tipo === "local") {
+      setResp({ ok: true, r: fuente.r });
+      return;
+    }
     let vivo = true;
     setResp(null);
-    revisarPagina(url).then((r) => vivo && setResp(r));
+    revisarPagina(fuente.url).then((r) => vivo && setResp(r));
     return () => {
       vivo = false;
     };
-  }, [url]);
+  }, [fuente]);
 
   return (
     <section className="revision" aria-live="polite">
@@ -312,12 +325,14 @@ function RevisionPagina({ url, alVolver }: { url: string; alVolver: () => void }
         </div>
       )}
       {resp && !resp.ok && <p className="error">{resp.error}</p>}
-      {resp && resp.ok && <Informe r={resp.r} />}
+      {resp && resp.ok && <Informe r={resp.r} local={fuente.tipo === "local"} />}
     </section>
   );
 }
 
-function Informe({ r }: { r: PaginaRevisada }) {
+const MARCA_PUNTO: Record<string, string> = { bien: "Bien", ojo: "Ojo", mal: "Mal", sin_datos: "Sin datos" };
+
+function Informe({ r, local }: { r: PaginaRevisada; local: boolean }) {
   const d = r.datos;
   const pide = [d.pideClave && "una clave", d.pideTarjeta && "datos de tarjeta", d.pideCodigo && "un código o clave dinámica"].filter(Boolean) as string[];
   const filas: [string, ReactNode][] = [];
@@ -350,10 +365,27 @@ function Informe({ r }: { r: PaginaRevisada }) {
       <div className="revision-cuerpo">
         <figure className="captura">
           {r.captura ? <img src={r.captura} alt={`Captura de ${hostDe(r.final)}`} /> : <div className="captura-vacia">{r.capturaNota ?? "Sin vista previa."}</div>}
-          <figcaption>Captura tomada por SScuDo en un navegador aparte. No escribas nada en esa página.</figcaption>
+          <figcaption>{local ? "Captura del navegador aislado de SScuDo." : "Captura tomada por SScuDo en un navegador aparte."} No escribas nada en esa página.</figcaption>
         </figure>
 
         <div>
+          {r.puntos?.length > 0 && (
+            <div className="bloque">
+              <h3>Punto por punto</h3>
+              <ul className="puntos">
+                {r.puntos.map((p) => (
+                  <li key={p.id} className={`punto-${p.estado}`}>
+                    <span className="punto-marca">{MARCA_PUNTO[p.estado]}</span>
+                    <div>
+                      <strong>{p.titulo}</strong>
+                      <p>{p.detalle}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {r.cadena.length > 1 && (
             <div className="bloque">
               <h3>Por dónde pasa el enlace</h3>
@@ -395,7 +427,11 @@ function Informe({ r }: { r: PaginaRevisada }) {
           )}
         </div>
       </div>
-      <p className="nota">La página se revisó desde Cloudflare: quien la armó no ve tu conexión. SScuDo no guarda la dirección.</p>
+      <p className="nota">
+        {local
+          ? "La página se abrió en un navegador aislado de SScuDo y se analizó en tu teléfono. No se envió a ningún servidor."
+          : "La página se revisó desde Cloudflare: quien la armó no ve tu conexión. SScuDo no guarda la dirección."}
+      </p>
     </>
   );
 }
@@ -568,7 +604,7 @@ export function App() {
   const [leyendo, setLeyendo] = useState(false);
   const [puedePegar, setPuedePegar] = useState(() => !android && typeof navigator !== "undefined" && !!navigator.clipboard?.readText);
   const [hayCopiado, setHayCopiado] = useState(false);
-  const [pagina, setPagina] = useState<string | null>(null);
+  const [pagina, setPagina] = useState<FuentePagina | null>(null);
   const [comunidad, setComunidad] = useState<Comunidad | null>(null);
   const resultadoRef = useRef<HTMLDivElement>(null);
   const cajaRef = useRef<HTMLTextAreaElement>(null);
@@ -595,14 +631,22 @@ export function App() {
     }, 420);
   }, []);
 
-  const abrirPagina = useCallback((url: string) => {
+  const mostrarPagina = useCallback((f: FuentePagina) => {
     setVista((v) => {
       if (v !== "pagina") vistaAnterior.current = v;
       return "pagina";
     });
-    setPagina(url);
+    setPagina(f);
     window.scrollTo({ top: 0 });
   }, []);
+
+  const abrirPagina = useCallback(
+    (url: string) => {
+      if (android?.revisarPagina) android.revisarPagina(url);
+      else mostrarPagina({ tipo: "servicio", url });
+    },
+    [mostrarPagina],
+  );
 
   // Lo que llega en el fragmento: desde la app de Android o un enlace propio.
   useEffect(() => {
@@ -614,6 +658,15 @@ export function App() {
         abrirPagina(f.valor);
         return;
       }
+      if (f.tipo === "revision") {
+        try {
+          const l = JSON.parse(android?.tomarRevision?.() || "null") as RevisionLocal | null;
+          if (l) mostrarPagina({ tipo: "local", r: analizarLocal(l) });
+        } catch {
+          /* revisión dañada o ya tomada */
+        }
+        return;
+      }
       setVista("revisar");
       setTexto(f.valor);
       revisar(f.valor);
@@ -621,7 +674,7 @@ export function App() {
     tomar();
     window.addEventListener("hashchange", tomar);
     return () => window.removeEventListener("hashchange", tomar);
-  }, [revisar, abrirPagina]);
+  }, [revisar, abrirPagina, mostrarPagina]);
 
   // Texto que llega desde "Compartir → SScuDo" en la app web instalada.
   useEffect(() => {
@@ -700,7 +753,7 @@ export function App() {
 
       {vista === "pagina" && pagina ? (
         <main>
-          <RevisionPagina url={pagina} alVolver={() => setVista(vistaAnterior.current)} />
+          <RevisionPagina fuente={pagina} alVolver={() => setVista(vistaAnterior.current)} />
         </main>
       ) : vista === "campanas" ? (
         <main>

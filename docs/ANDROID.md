@@ -11,7 +11,7 @@ Código en `android/` (Kotlin, sin dependencias fuera de AndroidX). Android 8 o 
 | Revisar lo copiado | Al abrir la app, si hay texto copiado, ofrece revisarlo (solo mira si existe; lo lee al tocar el botón). Botón "Revisar copiado" en los ajustes rápidos | Ninguno |
 | Revisar enlaces antes de abrirlos | Se elige SScuDo como app para abrir enlaces. Mira la dirección en el momento del toque y la pasa al navegador. Solo se muestra si hay señales | Ser la app de navegador predeterminada |
 | Enlaces acortados | Pregunta al acortador a dónde redirige (solo la cabecera `Location`, sin abrir el destino), revisa el destino y abre el destino ya revisado. Si el acortador no responde, avisa en vez de abrir | Internet |
-| Ver la página sin abrirla | Desde el aviso de un enlace: el servicio de SScuDo abre la página en Cloudflare y devuelve captura, camino del enlace y datos del código (solo si existe `SSCUDO_API`) | Internet |
+| Revisar la página | A pedido (desde el aviso de un enlace o un resultado): `PaginaActivity` abre la página en un navegador aislado que no se puede tocar (sin cookies, sin permisos, sin diálogos, sin descargas, solo http/https), lee su código y su texto visible, toma una captura y anota el aviso de Google Safe Browsing. La interfaz lo analiza en el teléfono y lo muestra punto por punto. La página ve la conexión del teléfono, como en cualquier navegador | Internet |
 | Avisar si llega un mensaje de estafa | Lee el texto de las notificaciones entrantes y alerta solo en nivel alto | Acceso a notificaciones |
 
 El motor es el mismo JavaScript de la web (`assets/motor.js`), ejecutado en un WebView sin interfaz y **con la red bloqueada**. No se guarda ni se envía ningún texto. Lo único que sale es la dirección de un enlace, en los dos casos de arriba.
@@ -50,6 +50,9 @@ APK siguiente. Usa los mensajes de ejemplo de la propia app; no hace falta un me
       abrir la noticia (quizás con una pantalla breve "Es un enlace acortado"). Acorta
       `http://viabcp.com.seguridad-clientes.online/login` y tócala: debe salir el aviso con el camino
       `bit.ly ↓ viabcp.com.seguridad-clientes.online`.
+- [ ] **Revisar la página.** En el aviso de un enlace, toca "Revisar la página": se ve la página en un
+      marco que no se puede tocar y al rato aparece la revisión con captura y "Punto por punto".
+      Prueba con una noticia y con una página de login cualquiera.
 - [ ] **Notificaciones.** Panel → "Avisarme si llega un mensaje de estafa" (en Android 13+ primero
       "Permitir ajustes restringidos"). Que alguien te envíe por WhatsApp un ejemplo de estafa: llega
       una alerta. Un mensaje normal no genera nada.

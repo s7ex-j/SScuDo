@@ -20,4 +20,12 @@ cpSync("extension/manifest.json", `${out}/manifest.json`);
 cpSync("extension/popup.html", `${out}/popup.html`);
 cpSync("extension/popup.css", `${out}/popup.css`);
 cpSync("public/iconos", `${out}/iconos`, { recursive: true });
+// Las mismas letras que la app (ver CLAUDE.md, "Diseño de la app").
+mkdirSync(`${out}/letras`, { recursive: true });
+for (const [paquete, archivo] of [
+  ["@fontsource/atkinson-hyperlegible", "atkinson-hyperlegible-latin-400-normal.woff2"],
+  ["@fontsource/atkinson-hyperlegible", "atkinson-hyperlegible-latin-700-normal.woff2"],
+  ["@fontsource/atkinson-hyperlegible-mono", "atkinson-hyperlegible-mono-latin-400-normal.woff2"],
+  ["@fontsource-variable/archivo", "archivo-latin-wdth-normal.woff2"],
+]) cpSync(`node_modules/${paquete}/files/${archivo}`, `${out}/letras/${archivo}`);
 console.log("Extensión lista en", out);

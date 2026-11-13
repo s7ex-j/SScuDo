@@ -103,7 +103,8 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 - Dominios oficiales: todos los dominios de `brands.ts` tienen fuente anotada y están fijados en una prueba. El detalle está en [docs/DOMINIOS.md](docs/DOMINIOS.md).
 
 **Límites de diseño**
-- Al revisar un mensaje no abre enlaces ni consulta la antigüedad de un dominio. Eso solo pasa si tocas "Ver la página sin abrirla": el servicio abre la página desde Cloudflare (nunca desde tu teléfono) y solo recibe la dirección. No lee imágenes ni audios.
+- Al revisar un mensaje no abre enlaces. Si tocas "Revisar la página", Android la abre en un navegador aislado de la app y la analiza en el teléfono (la página sí ve tu conexión); la extensión lee la pestaña que ya tienes abierta. La fecha del dominio se consulta en rdap.org. No lee imágenes ni audios.
+- El motor es de reglas escritas a mano con pesos (no es una red neuronal ni aprende solo): `src/engine/signals.ts`, `urls.ts`, `analyze.ts`.
 - Reconoce patrones conocidos. Una estafa nueva o bien escrita puede pasar sin marca.
 - No reemplaza a tu banco ni a la Policía.
 

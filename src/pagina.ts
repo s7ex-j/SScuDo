@@ -1,6 +1,7 @@
 // Cliente de POST /pagina (worker/src/pagina.ts): revisa una página sin abrirla
 // en el dispositivo. Solo se envía la dirección del enlace, nunca el mensaje.
-import type { PageData } from "./engine";
+import { analyzeHtml } from "./engine";
+import type { PageData, Punto } from "./engine";
 
 const API = (import.meta.env.VITE_SSCUDO_API as string | undefined)?.replace(/\/$/, "") ?? "";
 export const vistaPreviaActiva = API !== "";
@@ -18,6 +19,7 @@ export interface PaginaRevisada {
   entidad: string | null;
   motivos: { titulo: string; detalle: string }[];
   datos: PageData;
+  puntos: Punto[];
   captura: string | null;
   capturaNota: string | null;
 }
@@ -34,4 +36,38 @@ export async function revisarPagina(url: string): Promise<Respuesta> {
   } catch {
     return { ok: false, error: "Sin conexión con el servicio. Revisa tu internet e inténtalo otra vez." };
   }
+}
+
+/** Lo que deja la app de Android tras abrir la página en su navegador aislado. */
+export interface RevisionLocal {
+  pedida: string;
+  final: string;
+  cadena: string[];
+  html: string;
+  texto: string;
+  captura: string | null;
+  creado: string | null;
+  safeBrowsing: { amenaza: string | null } | null;
+}
+
+/** Analiza en el dispositivo una página que Android ya cargó. No usa red. */
+export function analizarLocal(l: RevisionLocal): PaginaRevisada {
+  const r = analyzeHtml({ url: l.final, html: l.html, texto: l.texto, cadena: l.cadena, creado: l.creado, safeBrowsing: l.safeBrowsing ?? undefined });
+  return {
+    pedida: l.pedida,
+    final: l.final,
+    cadena: l.cadena,
+    estado: 200,
+    error: l.html || l.safeBrowsing?.amenaza ? null : "La página no terminó de cargar: revisé lo que alcancé a ver.",
+    nivel: r.level,
+    titulo: r.headline,
+    detalle: r.detail,
+    dominio: r.registrable,
+    entidad: r.brand?.name ?? null,
+    motivos: r.findings.filter((f) => f.weight > 0).map((f) => ({ titulo: f.title, detalle: f.detail })),
+    datos: r.datos,
+    puntos: r.puntos,
+    captura: l.captura,
+    capturaNota: l.captura ? null : "No se pudo tomar la captura.",
+  };
 }

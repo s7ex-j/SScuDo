@@ -6,11 +6,11 @@ import type { PageReport } from "../../src/engine";
 import type { Mensaje, Respuesta } from "./mensajes";
 
 const MARCA: Record<PageReport["level"], { texto: string; color: string }> = {
-  alto: { texto: "!", color: "#ff5c7a" },
-  sospechoso: { texto: "?", color: "#ffd84d" },
-  oficial: { texto: "✓", color: "#7fd8f0" },
-  sin_senales: { texto: "", color: "#3f4763" },
-  no_aplica: { texto: "", color: "#3f4763" },
+  alto: { texto: "!", color: "#c41e3a" },
+  sospechoso: { texto: "?", color: "#9a5f0c" },
+  oficial: { texto: "✓", color: "#4a5a78" },
+  sin_senales: { texto: "", color: "#4a5a78" },
+  no_aplica: { texto: "", color: "#4a5a78" },
 };
 
 const clave = (tabId: number) => `tab-${tabId}`;
@@ -45,6 +45,6 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
   } catch {
     // Si el navegador no deja abrirla sola, queda un aviso en el icono.
     chrome.action.setBadgeText({ text: "1" });
-    chrome.action.setBadgeBackgroundColor({ color: "#e0b27a" });
+    chrome.action.setBadgeBackgroundColor({ color: "#1d2a44" });
   }
 });

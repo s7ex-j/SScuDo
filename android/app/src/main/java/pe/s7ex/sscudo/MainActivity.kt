@@ -24,6 +24,8 @@ class MainActivity : Activity() {
         const val EXTRA_PAGINA = "pe.s7ex.sscudo.PAGINA"
         /** Revisar lo copiado (desde el botón de ajustes rápidos). */
         const val EXTRA_PORTAPAPELES = "pe.s7ex.sscudo.PORTAPAPELES"
+        /** Hay una revisión de página lista en PaginaActivity.resultado. */
+        const val EXTRA_REVISION = "pe.s7ex.sscudo.REVISION"
         private const val ANFITRION = "appassets.androidplatform.net"
         private const val INICIO = "https://$ANFITRION/assets/web/app/index.html"
     }
@@ -96,6 +98,7 @@ class MainActivity : Activity() {
 
     /** Lo que trae el intent, como fragmento de la web (#texto=... o #pagina=...). */
     private fun fragmentoDe(intent: Intent?): String? {
+        if (intent?.getBooleanExtra(EXTRA_REVISION, false) == true) return "revision=" + System.currentTimeMillis()
         val pagina = intent?.getStringExtra(EXTRA_PAGINA)
         if (!pagina.isNullOrBlank()) return "pagina=" + Uri.encode(pagina.take(2000))
         return textoDe(intent)?.let { "texto=" + Uri.encode(it) }

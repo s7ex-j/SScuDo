@@ -19,7 +19,8 @@ Lee esto y `docs/HOJA_DE_RUTA.md`; con eso basta para continuar sin la conversac
 | Entidades y dominios oficiales | `src/engine/brands.ts` + `docs/DOMINIOS.md` |
 | Análisis de enlaces | `src/engine/urls.ts` |
 | Análisis de páginas (extensión, Android) | `src/engine/page.ts` |
-| Análisis del código de una página (servicio) | `src/engine/html.ts`, `worker/src/pagina.ts` |
+| Análisis del código y texto de una página | `src/engine/html.ts` (lista "punto por punto") |
+| Revisión de páginas en Android | `android/.../PaginaActivity.kt` (navegador aislado) |
 | Interfaz de la app | `src/App.tsx`, `src/styles.css` (diseño "el sello del trámite", ver abajo) |
 | Página de presentación | `index.html`, `src/landing/` |
 | Extensión | `extension/` |
@@ -44,10 +45,12 @@ cambia el número en `VERSION` y haz push; no hacen falta etiquetas.
 
 ## Reglas que no se rompen
 
-1. **El motor no usa red ni IA** y el texto analizado nunca sale del dispositivo. Lo único que puede
-   salir es la **dirección de un enlace**, y solo en dos casos: Android pregunta a un acortador a dónde
-   redirige (la misma petición que haría el navegador), y "Ver la página sin abrirla" la manda al
-   servicio (`POST /pagina`), que la abre desde Cloudflare y no la guarda. Nunca el mensaje.
+1. **El motor no usa red ni IA** y el texto analizado nunca sale del dispositivo. Lo que sí toca la
+   red, siempre fuera del motor y nunca con el mensaje: (a) Android pregunta a un acortador a dónde
+   redirige; (b) "Revisar la página", a pedido: en Android se abre en un navegador aislado de la app
+   (`PaginaActivity`) y se analiza en el teléfono. Jharol aceptó (13/11) que la página vea la conexión
+   del teléfono; la pantalla lo dice. En la web, sin Android, se usa el servicio (`POST /pagina`);
+   (c) la fecha del dominio en `rdap.org` (Android y extensión).
 2. **Nunca "es seguro".** El mejor resultado posible es "sin señales", con su advertencia.
 3. **Cero falsos positivos conocidos**: toda regla nueva se corre contra los legítimos de
    `tests/dataset.ts` y `tests/reserva.ts`. Si uno se marca, la regla no entra.

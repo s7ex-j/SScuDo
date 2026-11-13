@@ -1,22 +1,35 @@
-:root { color-scheme: dark; --ink:#151923; --ink-2:#1b1f2b; --line:#2a3042; --line-2:#3f4763; --text:#f1eadd; --text-2:#c0b9ad; --mute:#8f8a97; --accent:#e0b27a; --red:#ff5c7a; --amber:#ffd84d; --blue:#7fd8f0; }
+/* Mismo diseño que la app: "el sello del trámite" (ver CLAUDE.md). */
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; src: url(letras/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; src: url(letras/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible Mono"; font-weight: 400; src: url(letras/atkinson-hyperlegible-mono-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Archivo Variable"; font-weight: 100 900; font-stretch: 62% 125%; src: url(letras/archivo-latin-wdth-normal.woff2) format("woff2"); }
+:root { color-scheme: light; --papel:#edf0f3; --hoja:#fbfcfd; --tinta:#1d2a44; --tinta-2:#3e4a63; --gris:#626d84; --linea:#cdd4de; --linea-2:#aab4c3; --rojo:#c41e3a; --ocre:#9a5f0c; --neutro:#4a5a78;
+  --texto:"Atkinson Hyperlegible", system-ui, sans-serif; --mono:"Atkinson Hyperlegible Mono", ui-monospace, monospace; --display:"Archivo Variable", "Arial Narrow", sans-serif; }
 * { box-sizing: border-box; }
-body { margin: 0; width: 360px; background: var(--ink); color: var(--text); font: 14.5px/1.45 system-ui, "Segoe UI", sans-serif; padding: 14px; }
-header { display: flex; align-items: center; gap: 8px; font-size: 17px; margin-bottom: 12px; }
-.veredicto { --tono: var(--mute); border-left: 5px solid var(--tono); padding: 10px 12px; background: var(--ink-2); border-radius: 3px 10px 10px 3px; }
-.veredicto.alto { --tono: var(--red); } .veredicto.sospechoso { --tono: var(--amber); } .veredicto.oficial, .veredicto.sin_senales { --tono: var(--blue); }
-.veredicto h2 { margin: 0 0 4px; font-size: 17px; line-height: 1.2; color: var(--tono); }
-.veredicto p { margin: 0; color: var(--text-2); }
-.url { margin: 10px 0 0; padding: 9px 10px; background: var(--ink-2); border: 1px solid var(--line); border-radius: 8px; font: 13px/1.7 ui-monospace, Consolas, monospace; overflow-wrap: anywhere; color: var(--mute); }
-.url b { font-weight: 600; padding: 2px 4px; border-radius: 3px; color: #dff7ff; background: rgba(127,216,240,.16); box-shadow: inset 0 -2px 0 var(--blue); }
-.url.ajeno b { color: #ffe1e7; background: rgba(255,92,122,.2); box-shadow: inset 0 -2px 0 var(--red); }
-ul { margin: 10px 0 0; padding: 0; list-style: none; }
-li { padding: 8px 0 8px 10px; border-left: 3px solid var(--accent); border-bottom: 1px solid var(--line); }
-li:last-child { border-bottom: 0; }
-li strong { display: block; } li span { color: var(--text-2); font-size: 13.5px; }
-#mensaje { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
-label { display: block; font-weight: 600; margin-bottom: 6px; }
-textarea { width: 100%; resize: vertical; background: var(--ink-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; font: inherit; }
-textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-button { margin-top: 8px; width: 100%; background: var(--accent); color: #1b1408; border: 0; border-radius: 8px; padding: 9px; font: inherit; font-weight: 600; cursor: pointer; }
+body { margin: 0; width: 380px; background: var(--papel); color: var(--tinta); font: 15px/1.45 var(--texto); padding: 14px 16px 16px; }
+header { display: flex; align-items: center; gap: 8px; font: 800 20px var(--display); font-stretch: 85%; margin-bottom: 10px; }
+.sello { --c: var(--neutro); display: inline-flex; flex-direction: column; align-items: center; margin: 8px 0 12px 4px; padding: 6px 14px 8px; border: 4px double var(--c); border-radius: 5px; color: var(--c); background: var(--hoja); transform: rotate(-3deg); text-align: center; }
+.sello.alto { --c: var(--rojo); } .sello.sospechoso { --c: var(--ocre); }
+.sello small { font: 600 11px var(--display); }
+.sello b { font: 850 22px/0.95 var(--display); font-stretch: 70%; text-transform: uppercase; text-wrap: balance; }
+h2 { margin: 0 0 4px; font: 750 19px/1.15 var(--display); font-stretch: 80%; }
+.detalle { margin: 0; color: var(--tinta-2); }
+.url { margin: 10px 0 0; font: 13px/1.6 var(--mono); overflow-wrap: anywhere; color: var(--gris); }
+.url b { font-weight: 700; font-size: 16px; color: var(--tinta); text-decoration: underline 3px var(--neutro); text-underline-offset: 4px; }
+.url.ajeno b { text-decoration-color: var(--rojo); }
+h3 { margin: 16px 0 6px; font: 750 16px var(--display); font-stretch: 85%; }
+ul { margin: 0; padding: 0; list-style: none; }
+.puntos li { display: grid; grid-template-columns: 74px 1fr; gap: 8px; padding: 8px 0; border-top: 1px solid var(--linea); }
+.puntos .marca { white-space: nowrap; justify-self: start; align-self: start; padding: 1px 6px 2px; border: 2px solid currentColor; border-radius: 4px; font: 800 13px var(--display); font-stretch: 80%; }
+.puntos .bien .marca { color: var(--neutro); } .puntos .ojo .marca { color: var(--ocre); } .puntos .mal .marca { color: var(--rojo); background: #fbe9ec; } .puntos .sin_datos .marca { color: var(--gris); border-style: dashed; }
+.puntos strong { display: block; } .puntos span { color: var(--tinta-2); font-size: 13.5px; }
+.hallazgos li { padding: 6px 0 6px 10px; border-left: 4px solid var(--rojo); margin-bottom: 8px; }
+.hallazgos strong { display: block; } .hallazgos span { color: var(--tinta-2); font-size: 13.5px; }
+.cargando { color: var(--gris); font-size: 13.5px; margin-top: 10px; }
+#mensaje { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linea-2); }
+label { display: block; font-weight: 700; margin-bottom: 6px; }
+textarea { width: 100%; resize: vertical; background: var(--hoja); color: var(--tinta); border: 1px solid var(--linea-2); border-radius: 4px; padding: 8px 10px; font: inherit; }
+textarea:focus-visible, button:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+button { margin-top: 8px; width: 100%; background: var(--tinta); color: var(--hoja); border: 0; border-radius: 10px; padding: 10px; font: inherit; font-weight: 700; cursor: pointer; }
 #resultado:not(:empty) { margin-top: 12px; }
-footer { margin-top: 14px; color: var(--mute); font-size: 12.5px; }
+footer { margin-top: 14px; color: var(--gris); font-size: 12px; }

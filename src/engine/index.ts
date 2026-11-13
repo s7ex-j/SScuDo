@@ -5,5 +5,5 @@ export type { Analysis, Brand, Campaign, Category, Finding, Level, Span, UrlRepo
 export { analyzePage } from "./page";
 export type { PageInput, PageLevel, PageReport } from "./page";
 export { analyzeHtml } from "./html";
-export type { HtmlInput, HtmlReport, PageData } from "./html";
+export type { EstadoPunto, HtmlInput, HtmlReport, PageData, Punto } from "./html";
 export { isShortener, registrableOf } from "./urls";

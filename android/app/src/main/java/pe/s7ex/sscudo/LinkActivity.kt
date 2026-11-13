@@ -173,11 +173,9 @@ class LinkActivity : Activity() {
         finish()
     }
 
-    private fun verSinAbrir(url: String) {
-        val i = Intent(this, MainActivity::class.java)
-            .putExtra(MainActivity.EXTRA_PAGINA, url)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(i)
+    /** Abre la página en el navegador aislado de SScuDo, que la analiza sin dejar tocarla. */
+    private fun revisarPagina(url: String) {
+        startActivity(Intent(this, PaginaActivity::class.java).putExtra(PaginaActivity.EXTRA_URL, url).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         finish()
     }
 
@@ -339,9 +337,7 @@ class LinkActivity : Activity() {
         caja.addView(View(this).apply { setBackgroundColor(LINEA) }, LinearLayout.LayoutParams(MATCH_PARENT, dp(1)).apply { bottomMargin = dp(18) })
 
         caja.addView(boton("No abrir", true) { finish() })
-        if (BuildConfig.SSCUDO_API.isNotEmpty()) {
-            caja.addView(boton("Ver la página sin abrirla", false) { verSinAbrir(if (sinDestino) original else url) })
-        }
+        caja.addView(boton("Revisar la página", false) { revisarPagina(if (sinDestino) original else url) })
         caja.addView(Button(this).apply {
             text = "Abrir de todos modos"
             textSize = 15f

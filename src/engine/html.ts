@@ -1,3 +1,4 @@
+import { analyze } from "./analyze";
 import { BRANDS, isOfficialHost } from "./brands";
 import { fold } from "./normalize";
 import { analyzePage, pageVerdict } from "./page";
@@ -5,13 +6,15 @@ import type { PageLevel } from "./page";
 import type { Brand, Finding } from "./types";
 import { isShortener, registrableOf } from "./urls";
 
-// Lee el código de una página que alguien más ya descargó (el servicio de
-// SScuDo en Cloudflare, nunca el teléfono de la persona). Esta función no
-// hace peticiones: recibe el HTML como texto y devuelve lo que encontró.
+// Lee una página ya cargada por otro (la app de Android en un navegador
+// aislado, la extensión en la pestaña abierta o el servicio en Cloudflare).
+// Esta función no hace peticiones: recibe el HTML y el texto visible.
 //
 // Qué mira: si pide clave, tarjeta o códigos; a qué dominio envía esos datos;
-// si usa imágenes del sitio oficial de un banco; teléfonos, WhatsApp y correos
-// de contacto; cuántos días tiene el dominio; y por dónde pasó el enlace.
+// si usa imágenes del sitio oficial de un banco; qué dice el texto visible
+// (con las mismas señales que un mensaje); teléfonos, WhatsApp y correos;
+// cuántos días tiene el dominio; por dónde pasó el enlace; y, si lo hay, el
+// aviso de Google Safe Browsing. Devuelve además una lista punto por punto.
 
 export interface HtmlInput {
   /** Dirección final, después de seguir las redirecciones. */
@@ -21,8 +24,22 @@ export interface HtmlInput {
   cadena?: string[];
   /** Fecha de registro del dominio (ISO), si se pudo consultar. */
   creado?: string | null;
+  /** Texto visible de la página (document.body.innerText), si se renderizó. */
+  texto?: string;
+  /** Resultado de Google Safe Browsing (solo Android). Ausente = no se consultó. */
+  safeBrowsing?: { amenaza: string | null };
   /** Momento de referencia en ms (para pruebas). */
   ahora?: number;
+}
+
+export type EstadoPunto = "bien" | "ojo" | "mal" | "sin_datos";
+
+/** Un punto de la revisión: qué se miró y cómo salió. */
+export interface Punto {
+  id: string;
+  titulo: string;
+  estado: EstadoPunto;
+  detalle: string;
 }
 
 export interface PageData {
@@ -40,6 +57,8 @@ export interface PageData {
   recursosDe: string[];
   diasDominio: number | null;
   cadena: string[];
+  /** Señales de estafa encontradas en el texto visible. */
+  frasesTexto: string[];
 }
 
 export interface HtmlReport {
@@ -50,6 +69,7 @@ export interface HtmlReport {
   brand: Brand | null;
   findings: Finding[];
   datos: PageData;
+  puntos: Punto[];
 }
 
 const SENSIBLES = new Set<Brand["kind"]>(["banco", "billetera", "estado", "pensiones"]);
@@ -207,6 +227,15 @@ export function analyzeHtml(input: HtmlInput): HtmlReport {
     if (b) recursosDe.add(b);
   }
 
+  // El texto visible, revisado con las mismas señales que un mensaje. Los
+  // enlaces y correos de una página son ruido (menús, pies): no cuentan.
+  const visible = (input.texto ?? texto).replace(/[ \t]+/g, " ").slice(0, 6000);
+  const delTexto = visible.trim()
+    ? analyze(visible).findings.filter((f) => f.weight > 0 && !/^(url_|correo_)/.test(f.id) && f.id !== "marca_enlace_ajeno")
+    : [];
+  const puntajeTexto = delTexto.reduce((n, f) => n + f.weight, 0);
+  const nivelTexto = !visible.trim() ? null : puntajeTexto >= 55 ? "alto" : puntajeTexto >= 22 ? "sospechoso" : "sin_senales";
+
   const ahora = input.ahora ?? Date.now();
   const creado = input.creado ? Date.parse(input.creado) : NaN;
   const diasDominio = Number.isFinite(creado) ? Math.max(0, Math.floor((ahora - creado) / 86_400_000)) : null;
@@ -224,12 +253,15 @@ export function analyzeHtml(input: HtmlInput): HtmlReport {
     recursosDe: [...recursosDe].map((b) => b.name),
     diasDominio,
     cadena,
+    frasesTexto: delTexto.slice(0, 4).map((f) => f.title),
   };
 
   const presentacion = [titulo, nombreSitio, h1].filter(Boolean).join(" | ");
   const base0 = analyzePage({ url: input.url, title: presentacion, hasPassword: general.clave || general.codigo, hasCard: general.tarjeta });
+  const amenaza = input.safeBrowsing?.amenaza ?? null;
   if (base0.level === "no_aplica" || base0.level === "oficial" || !base0.url) {
-    return { level: base0.level, headline: base0.headline, detail: base0.detail, registrable: base0.url?.registrable ?? null, brand: base0.brand, findings: base0.findings, datos };
+    const r = { level: base0.level, headline: base0.headline, detail: base0.detail, registrable: base0.url?.registrable ?? null, brand: base0.brand, findings: base0.findings, datos };
+    return { ...r, puntos: puntos(r, base, input, nivelTexto) };
   }
 
   const findings = [...base0.findings];
@@ -257,11 +289,80 @@ export function analyzeHtml(input: HtmlInput): HtmlReport {
         : hallazgo("dominio_reciente", "enlace", 12, `El dominio tiene menos de 6 meses (${diasDominio} días)`, "No prueba nada por sí solo, pero las páginas falsas casi siempre son recientes."),
     );
   }
+  if (pideAlgo && nivelTexto === "alto") {
+    findings.push(hallazgo("pagina_texto_estafa", "datos", 25, "El texto de la página usa frases típicas de estafa", `Mientras te pide datos, dice cosas como: ${delTexto.slice(0, 2).map((f) => `"${f.title.toLowerCase()}"`).join(" y ")}.`));
+  }
+  if (amenaza) {
+    findings.push(hallazgo("safe_browsing", "enlace", 60, "Google la tiene marcada como peligrosa", "Google Safe Browsing, la lista que usan Chrome y Android, tiene esta página registrada como engañosa o dañina."));
+  }
   const saltos = new Set(cadena.map((c) => hostDe(c, base)).filter((h): h is string => !!h && !isShortener(h)).map(registrableOf));
   if (saltos.size >= 3) {
     findings.push(hallazgo("pagina_muchos_saltos", "enlace", 8, `El enlace pasó por ${saltos.size} dominios distintos`, "Saltar de página en página sirve para esquivar los filtros que bloquean estafas."));
   }
 
   const v = pageVerdict(base0.url, brand, findings);
-  return { level: v.level, headline: v.headline, detail: v.detail, registrable: base0.url.registrable, brand: v.brand, findings: v.findings, datos };
+  const r = { level: v.level, headline: v.headline, detail: v.detail, registrable: base0.url.registrable, brand: v.brand, findings: v.findings, datos };
+  return { ...r, puntos: puntos(r, base, input, nivelTexto) };
+}
+
+/** La revisión punto por punto: qué se miró y cómo salió cada cosa. */
+function puntos(r: Omit<HtmlReport, "puntos">, base: URL, input: HtmlInput, nivelTexto: string | null): Punto[] {
+  const d = r.datos;
+  const oficial = r.level === "oficial";
+  const ids = new Set(r.findings.map((f) => f.id));
+  const pide = [d.pideClave && "una clave", d.pideTarjeta && "datos de tarjeta", d.pideCodigo && "un código o clave dinámica"].filter(Boolean) as string[];
+  const out: Punto[] = [];
+  const p = (id: string, titulo: string, estado: EstadoPunto, detalle: string) => out.push({ id, titulo, estado, detalle });
+
+  if (r.level === "no_aplica") return out;
+
+  if (oficial) p("dominio", "Dominio", "bien", `${r.registrable} es un dominio oficial de ${r.brand?.name ?? "una entidad conocida"}.`);
+  else if (ids.has("url_marca_en_dominio") || ids.has("url_parecido") || ids.has("pagina_pide_clave_marca") || ids.has("pagina_copia_recursos"))
+    p("dominio", "Dominio", "mal", `${r.registrable} se hace pasar por ${r.brand?.name ?? "otra entidad"}, pero no es su dominio.`);
+  else if (ids.has("url_alojamiento_gratis") || ids.has("url_terminacion") || ids.has("url_palabras_gancho"))
+    p("dominio", "Dominio", "ojo", `${r.registrable}: ${r.findings.filter((f) => /^url_(alojamiento|terminacion|palabras)/.test(f.id)).map((f) => f.title.toLowerCase()).join("; ")}.`);
+  else p("dominio", "Dominio", "bien", `${r.registrable} no imita a ninguna entidad que SScuDo conozca. Eso no dice quién está detrás.`);
+
+  if (input.safeBrowsing) {
+    p("safe_browsing", "Lista de Google", input.safeBrowsing.amenaza ? "mal" : "bien", input.safeBrowsing.amenaza ? "Google Safe Browsing la marca como peligrosa." : "Google Safe Browsing no la tiene marcada. Las páginas nuevas tardan en entrar a esa lista.");
+  }
+
+  if (base.protocol === "http:") p("conexion", "Conexión", pide.length ? "mal" : "ojo", "No usa https: lo que escribas viaja sin cifrar.");
+  else p("conexion", "Conexión", "bien", "Usa https. Ojo: las páginas falsas también lo usan, no prueba que sea legítima.");
+
+  if (d.diasDominio === null) p("antiguedad", "Antigüedad del dominio", "sin_datos", "No se pudo consultar cuándo se registró.");
+  else p("antiguedad", "Antigüedad del dominio", d.diasDominio < 30 ? "mal" : d.diasDominio < 180 ? "ojo" : "bien", d.diasDominio < 1 ? "Se registró hoy." : `Se registró hace ${d.diasDominio} ${d.diasDominio === 1 ? "día" : "días"}.`);
+
+  if (!pide.length) p("pide", "Qué te pide", "bien", "No tiene campos de clave, tarjeta ni códigos.");
+  else p("pide", "Qué te pide", oficial ? "bien" : "ojo", `Pide ${pide.join(", ")}.${oficial ? "" : " Escríbelos solo en la página oficial que abres tú mismo."}`);
+
+  if (pide.length) {
+    if (d.enviaA.length) p("envia", "A dónde manda tus datos", "mal", `A ${d.enviaA.join(", ")}, un dominio distinto del que ves.`);
+    else p("envia", "A dónde manda tus datos", "bien", "Al mismo dominio de la página (o no se pudo ver: algunas lo hacen por código).");
+  }
+
+  if (d.recursosDe.length && !oficial) p("recursos", "Logos e imágenes", pide.length ? "mal" : "ojo", `Carga imágenes o diseño desde el sitio de ${d.recursosDe.join(", ")}.`);
+
+  if (nivelTexto) {
+    const estado: EstadoPunto = nivelTexto === "alto" ? "mal" : nivelTexto === "sospechoso" ? "ojo" : "bien";
+    p("texto", "Lo que dice el texto", oficial && estado !== "bien" ? "ojo" : estado, d.frasesTexto.length ? `Encontré: ${d.frasesTexto.map((x) => x.toLowerCase()).join("; ")}.` : "No usa las frases típicas de las estafas que conozco.");
+  } else {
+    p("texto", "Lo que dice el texto", "sin_datos", "No se leyó el texto visible de la página.");
+  }
+
+  if (d.cadena.length > 1) {
+    const acortada = d.cadena.slice(0, -1).some((c) => {
+      try {
+        return isShortener(new URL(c).hostname);
+      } catch {
+        return false;
+      }
+    });
+    p("camino", "Camino del enlace", ids.has("pagina_muchos_saltos") ? "ojo" : acortada ? "ojo" : "bien", `Pasó por ${d.cadena.length - 1} ${d.cadena.length === 2 ? "redirección" : "redirecciones"}${acortada ? ", empezando por un acortador" : ""}.`);
+  }
+
+  if (d.telefonos.length || d.whatsapp.length) {
+    p("contacto", "Teléfonos de contacto", oficial ? "bien" : "ojo", `${[...d.telefonos, ...d.whatsapp.map((w) => "WhatsApp " + w)].join(", ")}. Compáralos con el número del reverso de tu tarjeta.`);
+  }
+  return out;
 }

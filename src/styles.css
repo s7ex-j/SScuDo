@@ -711,6 +711,54 @@ h4 {
   color: var(--gris);
 }
 
+.puntos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.puntos li {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--linea);
+}
+.puntos strong {
+  display: block;
+}
+.puntos p {
+  margin: 2px 0 0;
+  font-size: 16px;
+  color: var(--tinta-2);
+}
+.punto-marca {
+  white-space: nowrap;
+  align-self: start;
+  justify-self: start;
+  padding: 2px 8px 3px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  font-family: var(--display);
+  font-stretch: 80%;
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.2;
+}
+.punto-bien .punto-marca {
+  color: var(--sello-neutro);
+}
+.punto-ojo .punto-marca {
+  color: var(--ocre);
+}
+.punto-mal .punto-marca {
+  color: var(--rojo);
+  background: #fbe9ec;
+}
+.punto-sin_datos .punto-marca {
+  color: var(--gris);
+  border-style: dashed;
+}
+
 .camino {
   list-style: none;
   margin: 0;

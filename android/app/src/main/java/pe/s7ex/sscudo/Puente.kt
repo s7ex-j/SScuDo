@@ -52,6 +52,23 @@ class Puente(private val actividad: Activity) {
         return r
     }
 
+    /** La revisión de página que dejó PaginaActivity (se entrega una sola vez). */
+    @JavascriptInterface
+    fun tomarRevision(): String {
+        val r = PaginaActivity.resultado.orEmpty()
+        PaginaActivity.resultado = null
+        return r
+    }
+
+    /** Abre la página en el navegador aislado de SScuDo para revisarla. */
+    @JavascriptInterface
+    fun revisarPagina(url: String) {
+        if (!(url.startsWith("http://") || url.startsWith("https://"))) return
+        actividad.runOnUiThread {
+            actividad.startActivity(android.content.Intent(actividad, PaginaActivity::class.java).putExtra(PaginaActivity.EXTRA_URL, url.take(2000)))
+        }
+    }
+
     @JavascriptInterface
     fun hayCopiado(): Boolean = enPrincipal(false) { hayTextoCopiado(actividad) }
 

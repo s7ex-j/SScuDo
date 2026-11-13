@@ -7,17 +7,20 @@
   </head>
   <body>
     <header>
-      <img src="iconos/icono.svg" width="28" height="28" alt="" />
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path d="M12 2.5 20 5.4v6.2c0 4.8-3.3 8.3-8 9.9-4.7-1.6-8-5.1-8-9.9V5.4Z" fill="#1d2a44" />
+        <path d="m8.6 9.4 2.6 2.3-2.6 2.3M12.6 14.4h3" fill="none" stroke="#edf0f3" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
       <strong>SScuDo</strong>
     </header>
     <section id="pagina" aria-live="polite"></section>
     <section id="mensaje">
       <label for="texto">Revisar un mensaje o enlace</label>
       <textarea id="texto" rows="3" placeholder="Pega aquí el mensaje que te llegó."></textarea>
-      <button id="revisar" type="button">Revisar</button>
+      <button id="revisar" type="button">Revisar mensaje</button>
       <div id="resultado" aria-live="polite"></div>
     </section>
-    <footer>Todo se revisa en tu equipo. No se envía tu historial ni lo que escribes.</footer>
+    <footer>Todo se revisa en tu equipo. Al abrir esta ventana se lee el texto de la pestaña y se consulta en rdap.org cuándo se registró su dominio. No se envía tu historial ni lo que escribes.</footer>
     <script src="popup.js"></script>
   </body>
 </html>

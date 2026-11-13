@@ -116,4 +116,37 @@ describe("análisis del código de una página", () => {
   it("ignora direcciones que no son web", () => {
     expect(analyzeHtml({ url: "chrome://settings", html: "" }).level).toBe("no_aplica");
   });
+
+  it("lee el texto visible: frases de estafa mientras pide la clave", () => {
+    const html = `<title>Acceso clientes</title><form><input type="password" name="clave"></form>`;
+    const texto = "Estimado cliente: su cuenta será bloqueada en las próximas 24 horas. Para evitar el bloqueo ingrese su clave de internet y el código que le llegará por SMS de inmediato.";
+    const r = analyzeHtml({ url: "https://acceso-clientes-ejemplo.pe/", html, texto });
+    expect(r.findings.map((f) => f.id)).toContain("pagina_texto_estafa");
+    expect(r.datos.frasesTexto.length).toBeGreaterThan(0);
+    expect(r.puntos.find((p) => p.id === "texto")?.estado).toBe("mal");
+  });
+
+  it("una noticia que advierte sobre estafas no sube de nivel por su texto", () => {
+    const texto = "La SBS advierte: si te escriben que tu cuenta será bloqueada y te piden tu clave por un enlace, es una estafa. Nunca compartas el código que llega por SMS.";
+    const r = analyzeHtml({ url: "https://diario-ejemplo.pe/alerta", html: NOTICIA, texto, creado: hace(4000), ahora: AHORA });
+    expect(r.level).toBe("sin_senales");
+  });
+
+  it("Google Safe Browsing decide por sí solo", () => {
+    const r = analyzeHtml({ url: "https://panaderia-ejemplo.pe/", html: "<title>Pan</title>", safeBrowsing: { amenaza: "SOCIAL_ENGINEERING" } });
+    expect(r.level).toBe("alto");
+    expect(r.puntos.find((p) => p.id === "safe_browsing")?.estado).toBe("mal");
+  });
+
+  it("arma la lista punto por punto", () => {
+    const r = analyzeHtml({ url: "https://bcp-seguridad.online/ingreso", html: COPIA_BANCO, creado: hace(3), ahora: AHORA, texto: "Ingresa a tu Banca por Internet", cadena: ["https://bit.ly/ejemplo", "https://bcp-seguridad.online/ingreso"], safeBrowsing: { amenaza: null } });
+    const estado = Object.fromEntries(r.puntos.map((p) => [p.id, p.estado]));
+    expect(estado).toMatchObject({ dominio: "mal", safe_browsing: "bien", conexion: "bien", antiguedad: "mal", pide: "ojo", envia: "mal", recursos: "mal", camino: "ojo", contacto: "ojo" });
+  });
+
+  it("en la página oficial los puntos salen bien", () => {
+    const r = analyzeHtml({ url: "https://www.viabcp.com/", html: TIENDA_LEGITIMA, creado: hace(9000), ahora: AHORA, texto: "Bienvenido a la Banca por Internet" });
+    expect(r.level).toBe("oficial");
+    expect(r.puntos.filter((p) => p.estado === "mal")).toEqual([]);
+  });
 });
