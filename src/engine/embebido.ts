@@ -2,6 +2,7 @@
 // archivo (motor.js) y se ejecuta en un WebView sin acceso a la red.
 import { analyze } from "./analyze";
 import { analyzePage } from "./page";
+import { extractUrls, isShortener } from "./urls";
 
 const api = {
   resumenMensaje(texto: string): string {
@@ -20,6 +21,8 @@ const api = {
       detalle: r.detail,
       dominio: r.url?.registrable ?? null,
       motivos: r.findings.filter((f) => f.weight > 0).slice(0, 3).map((f) => f.title),
+      // Si es un acortador, Android pregunta a dónde redirige antes de decidir.
+      acortado: isShortener(extractUrls(url.split(/[?#]/)[0])[0]?.host ?? ""),
     });
   },
 };

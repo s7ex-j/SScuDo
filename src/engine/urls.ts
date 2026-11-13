@@ -70,6 +70,17 @@ function splitHost(host: string): { subdomain: string; registrable: string; tld:
   return { subdomain, registrable, tld, hosting };
 }
 
+/** El dominio que alguien registró ("seguridad.bcp-clientes.top" → "bcp-clientes.top"). */
+export function registrableOf(host: string): string {
+  return splitHost(host.toLowerCase().replace(/\.$/, "")).registrable;
+}
+
+/** ¿Es un servicio acortador de enlaces (bit.ly, cutt.ly…)? */
+export function isShortener(host: string): boolean {
+  const h = host.toLowerCase().replace(/\.$/, "");
+  return SHORTENERS.has(h) || SHORTENERS.has(registrableOf(h));
+}
+
 function wordsOf(s: string): string[] {
   return s.split(/[^a-z0-9]+/).filter(Boolean);
 }

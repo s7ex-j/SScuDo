@@ -5,6 +5,7 @@
 //   GET  /campanas        cuántos reportes tuvo cada tipo de estafa esta semana
 //   POST /admin/ocultar   moderación: retirar un dominio de la lista (requiere clave)
 //   POST /admin/mostrar   moderación: deshacer lo anterior
+//   POST /pagina          revisa una página sin abrirla en el teléfono (ver pagina.ts)
 //
 // Decisiones de diseño:
 // - No se recibe ni se guarda el mensaje. Solo dominios y el tipo de estafa.
@@ -15,6 +16,7 @@
 // - La app y la extensión descargan la lista y comparan en el dispositivo: el
 //   servicio nunca se entera de qué páginas visita cada quien.
 import { officialBrandOf } from "../../src/engine/brands";
+import { revisarPagina } from "./pagina";
 
 export interface Env {
   DB: D1Database;
@@ -22,6 +24,7 @@ export interface Env {
   UMBRAL: string;
   SAL: string;
   ADMIN: string;
+  NAVEGADOR?: Fetcher;
 }
 
 const NO_REPORTABLES = [
@@ -87,6 +90,22 @@ async function reportar(req: Request, env: Env, h: Record<string, string>): Prom
   return json({ ok: true, recibidos: dominios, rechazados: pedidos.filter((d) => !dominios.includes(d)) }, 201, h);
 }
 
+async function pagina(req: Request, env: Env, h: Record<string, string>): Promise<Response> {
+  if (!h["Access-Control-Allow-Origin"]) return json({ error: "origen no permitido" }, 403);
+  const texto = await req.text();
+  if (texto.length > 3000) return json({ error: "demasiado grande" }, 413, h);
+  let cuerpo: unknown;
+  try {
+    cuerpo = JSON.parse(texto);
+  } catch {
+    return json({ error: "formato inválido" }, 400, h);
+  }
+  const dia = new Date().toISOString().slice(0, 10);
+  const quien = await huella(req.headers.get("CF-Connecting-IP") ?? "local", dia, env.SAL ?? "");
+  const r = await revisarPagina(cuerpo, quien, dia, env);
+  return json(r.datos, r.status, { ...h, "Cache-Control": "no-store" });
+}
+
 async function lista(env: Env, h: Record<string, string>): Promise<Response> {
   const umbral = Math.max(2, Number(env.UMBRAL) || 3);
   const desde = Date.now() - DIAS_LISTA * 86_400_000;
@@ -125,15 +144,16 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(req.url);
     const escritura = req.method === "POST" || req.method === "OPTIONS";
-    const h = cors(req, env, escritura && pathname === "/reportes");
+    const h = cors(req, env, escritura && (pathname === "/reportes" || pathname === "/pagina"));
     try {
       if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...h, "Access-Control-Allow-Methods": "GET, POST", "Access-Control-Allow-Headers": "content-type", "Access-Control-Max-Age": "86400" } });
       if (req.method === "POST" && pathname === "/reportes") return await reportar(req, env, h);
+      if (req.method === "POST" && pathname === "/pagina") return await pagina(req, env, h);
       if (req.method === "GET" && pathname === "/lista") return await lista(env, h);
       if (req.method === "GET" && pathname === "/campanas") return await campanas(env, h);
       if (req.method === "POST" && pathname === "/admin/ocultar") return await moderar(req, env, true);
       if (req.method === "POST" && pathname === "/admin/mostrar") return await moderar(req, env, false);
-      if (req.method === "GET" && pathname === "/") return json({ servicio: "sscudo-reportes", version: "0.1.0" }, 200, h);
+      if (req.method === "GET" && pathname === "/") return json({ servicio: "sscudo-reportes", version: "0.2.0" }, 200, h);
       return json({ error: "no existe" }, 404, h);
     } catch {
       return json({ error: "error interno" }, 500, h);

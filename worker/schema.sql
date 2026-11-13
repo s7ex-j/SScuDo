@@ -22,3 +22,12 @@ CREATE TABLE IF NOT EXISTS ocultos (
   motivo  TEXT NOT NULL DEFAULT '',
   creado  INTEGER NOT NULL
 );
+
+-- Revisiones de páginas (POST /pagina): solo se cuenta cuántas hizo cada
+-- huella en el día, para poner un límite. La dirección revisada no se guarda.
+CREATE TABLE IF NOT EXISTS consultas (
+  quien TEXT NOT NULL,
+  dia   TEXT NOT NULL,
+  n     INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (quien, dia)
+);

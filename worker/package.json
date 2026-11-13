@@ -16,5 +16,8 @@
     "miniflare": "^3.20240909.0",
     "typescript": "^7.0.2",
     "wrangler": "^3.78.0"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^2.0.0"
   }
 }

@@ -78,6 +78,11 @@ export function analyzePage(input: PageInput): PageReport {
     }
   }
 
+  return pageVerdict(u, brand, findings);
+}
+
+/** Puntaje y titular a partir de los hallazgos de una página que no es oficial. */
+export function pageVerdict(u: UrlReport, brand: Brand | null, findings: Finding[]): PageReport {
   const score = findings.reduce((s, f) => s + Math.max(0, f.weight), 0);
   const decisiva = findings.some((f) => DECISIVAS.has(f.id));
   const level: Level = decisiva || score >= 55 ? "alto" : score >= 22 ? "sospechoso" : "sin_senales";

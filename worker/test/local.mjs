@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { build } from "esbuild";
 import { Miniflare } from "miniflare";
 
-const { outputFiles } = await build({ entryPoints: ["src/index.ts"], bundle: true, format: "esm", write: false, target: "es2022" });
+const { outputFiles } = await build({ entryPoints: ["src/index.ts"], bundle: true, format: "esm", write: false, target: "es2022", alias: { "@cloudflare/puppeteer": "./test/puppeteer-falso.mjs" } });
 const mf = new Miniflare({
   modules: true,
   script: outputFiles[0].text,
