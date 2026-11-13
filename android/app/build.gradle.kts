@@ -18,6 +18,12 @@ android {
         targetSdk = 34
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("VERSION_NAME") ?: "0.2.0"
+        // Dirección del servicio de SScuDo (variable SSCUDO_API del repo). Vacía = sin "Ver la página sin abrirla".
+        buildConfigField("String", "SSCUDO_API", "\"" + (System.getenv("SSCUDO_API") ?: "") + "\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     signingConfigs {

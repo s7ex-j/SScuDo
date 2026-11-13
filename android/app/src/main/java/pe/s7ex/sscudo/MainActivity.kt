@@ -20,12 +20,18 @@ class MainActivity : Activity() {
 
     companion object {
         const val EXTRA_TEXTO = "pe.s7ex.sscudo.TEXTO"
+        /** Dirección para revisar en el servicio sin abrirla (desde el aviso de enlace). */
+        const val EXTRA_PAGINA = "pe.s7ex.sscudo.PAGINA"
+        /** Revisar lo copiado (desde el botón de ajustes rápidos). */
+        const val EXTRA_PORTAPAPELES = "pe.s7ex.sscudo.PORTAPAPELES"
         private const val ANFITRION = "appassets.androidplatform.net"
         private const val INICIO = "https://$ANFITRION/assets/web/app/index.html"
     }
 
     private lateinit var web: WebView
     private var cargada = false
+    /** Android solo deja leer lo copiado cuando la app tiene el foco: se espera a tenerlo. */
+    private var leerAlEnfocar = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +42,7 @@ class MainActivity : Activity() {
             .build()
 
         web = WebView(this)
-        web.setBackgroundColor(0xFF151923.toInt())
+        web.setBackgroundColor(0xFFEDF0F3.toInt())
         web.settings.javaScriptEnabled = true
         web.settings.domStorageEnabled = true
         web.settings.allowFileAccess = false
@@ -64,20 +70,46 @@ class MainActivity : Activity() {
         }
         setContentView(web)
 
-        val texto = textoDe(intent)
-        web.loadUrl(if (texto != null) INICIO + "#texto=" + Uri.encode(texto) else INICIO)
+        leerAlEnfocar = intent?.getBooleanExtra(EXTRA_PORTAPAPELES, false) == true
+        web.loadUrl(INICIO + (fragmentoDe(intent)?.let { "#$it" } ?: ""))
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        val texto = textoDe(intent) ?: return
-        val fragmento = "texto=" + Uri.encode(texto)
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus || !leerAlEnfocar) return
+        leerAlEnfocar = false
+        val copiado = Puente.leerPortapapeles(this)
+        if (copiado.isBlank()) {
+            android.widget.Toast.makeText(this, "No hay texto copiado. Copia el mensaje y vuelve a tocar el botón.", android.widget.Toast.LENGTH_LONG).show()
+            return
+        }
+        enviar("texto=" + Uri.encode(copiado.take(6000)))
+    }
+
+    private fun enviar(fragmento: String) {
         if (cargada) {
             web.evaluateJavascript("location.hash = " + org.json.JSONObject.quote(fragmento), null)
         } else {
             web.loadUrl("$INICIO#$fragmento")
         }
+    }
+
+    /** Lo que trae el intent, como fragmento de la web (#texto=... o #pagina=...). */
+    private fun fragmentoDe(intent: Intent?): String? {
+        val pagina = intent?.getStringExtra(EXTRA_PAGINA)
+        if (!pagina.isNullOrBlank()) return "pagina=" + Uri.encode(pagina.take(2000))
+        return textoDe(intent)?.let { "texto=" + Uri.encode(it) }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(EXTRA_PORTAPAPELES, false)) {
+            leerAlEnfocar = true
+            if (hasWindowFocus()) onWindowFocusChanged(true)
+            return
+        }
+        enviar(fragmentoDe(intent) ?: return)
     }
 
     private fun textoDe(intent: Intent?): String? {

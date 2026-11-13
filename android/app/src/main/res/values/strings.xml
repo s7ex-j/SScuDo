@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SScuDo</string>
-    <string name="revisar_con">Revisar con SScuDo</string>
+    <string name="revisar_con">SScuDo</string>
+    <string name="revisar_copiado">Revisar copiado</string>
     <string name="canal_nombre">Alertas de estafa</string>
     <string name="canal_descripcion">Avisa cuando llega un mensaje con alta probabilidad de estafa.</string>
 </resources>

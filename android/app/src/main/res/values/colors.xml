@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="tinta">#151923</color>
-    <color name="arena">#E0B27A</color>
-    <color name="rojo">#FF5C7A</color>
+    <!-- Los mismos de src/styles.css ("el sello del trámite"). -->
+    <color name="papel">#EDF0F3</color>
+    <color name="tinta">#1D2A44</color>
+    <color name="rojo">#C41E3A</color>
 </resources>

@@ -76,7 +76,7 @@ class NotifListener : NotificationListenerService() {
 
         val alerta = NotificationCompat.Builder(this, "estafas")
             .setSmallIcon(R.drawable.ic_escudo)
-            .setColor(0xFFFF5C7A.toInt())
+            .setColor(0xFFC41E3A.toInt())
             .setContentTitle(nombreDe(origen)?.let { "Posible estafa en un mensaje de $it" } ?: "Posible estafa en un mensaje")
             .setContentText(cuerpo)
             .setStyle(NotificationCompat.BigTextStyle().bigText(cuerpo))

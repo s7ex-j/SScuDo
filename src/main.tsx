@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "@fontsource/ibm-plex-sans/400.css";
-import "@fontsource/ibm-plex-sans/500.css";
-import "@fontsource/ibm-plex-sans/600.css";
-import "@fontsource/ibm-plex-sans-condensed/600.css";
-import "@fontsource/ibm-plex-sans-condensed/700.css";
-import "@fontsource/ibm-plex-mono/400.css";
-import "@fontsource/ibm-plex-mono/500.css";
+// Atkinson Hyperlegible: hecha para distinguir letras parecidas (l, 1, I; rn, m),
+// justo lo que hace falta para notar un dominio falso. Archivo: el sello y los títulos.
+import "@fontsource/atkinson-hyperlegible/400.css";
+import "@fontsource/atkinson-hyperlegible/700.css";
+import "@fontsource/atkinson-hyperlegible-mono/400.css";
+import "@fontsource/atkinson-hyperlegible-mono/700.css";
+import "@fontsource-variable/archivo/wdth.css";
 import "./styles.css";
 import { App } from "./App";
 
