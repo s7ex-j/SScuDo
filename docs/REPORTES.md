@@ -25,7 +25,7 @@ Cuando varias personas reportan el mismo dominio, SScuDo se lo advierte a quien 
 
 ## Publicarlo desde GitHub (recomendado)
 
-1. En Cloudflare, crea un token de API (Mi perfil → API Tokens) con permisos de edición sobre **Workers Scripts** y **D1**. Copia también tu **Account ID** (aparece en el panel de Workers).
+1. En Cloudflare, crea un token de API (Mi perfil → API Tokens) con permisos de edición sobre **Workers Scripts** y **D1** (y, para la vista previa de páginas, probablemente **Browser Rendering**: no se comprobó; si el despliegue se queja del navegador, agrégalo). Copia también tu **Account ID** (aparece en el panel de Workers).
 2. En GitHub: Settings → Secrets and variables → Actions → **Secrets**, crea:
    - `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`
    - `SSCUDO_SAL`: un texto largo al azar
@@ -72,3 +72,19 @@ SEMBRAR=1 node test/local.mjs          # servicio en http://localhost:8787 con d
 # en otra terminal, desde la raíz:
 VITE_SSCUDO_API=http://localhost:8787 npm run dev
 ```
+
+## Revisar una página sin abrirla (`POST /pagina`)
+
+La app manda `{ "url": "..." }` y el servicio, desde Cloudflare:
+
+1. Sigue las redirecciones una por una (también los acortadores y los `<meta http-equiv="refresh">`),
+   rechazando IPs, redes locales y puertos raros en cada salto.
+2. Descarga el HTML (máximo 1,5 MB) y lo pasa a `analyzeHtml` (`src/engine/html.ts`): qué pide, a qué
+   dominio manda los datos, si copia imágenes del sitio oficial de un banco, teléfonos, WhatsApp, correos.
+3. Consulta la fecha de registro del dominio en RDAP (`rdap.org`). Algunos dominios `.pe` pueden no
+   tener respuesta: se muestra "No se pudo consultar".
+4. Si existe el enlace `NAVEGADOR` (Browser Rendering), toma una captura de 390 px. El plan gratuito
+   tiene un cupo diario de uso del navegador; al agotarse, responde sin captura y lo dice.
+
+No guarda la dirección: solo cuenta consultas por huella diaria (tabla `consultas`), con un límite de 40
+por día.

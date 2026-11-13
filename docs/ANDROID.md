@@ -7,11 +7,14 @@ Código en `android/` (Kotlin, sin dependencias fuera de AndroidX). Android 8 o 
 | Función | Cómo | Permiso |
 |---|---|---|
 | Revisar un mensaje pegado | La misma interfaz de la web, empaquetada en la app | Ninguno |
-| "Compartir → SScuDo" y seleccionar texto → "Revisar con SScuDo" | Recibe el texto y lo analiza | Ninguno |
+| Seleccionar texto → "SScuDo" y "Compartir → SScuDo" | Recibe el texto y lo analiza. WhatsApp y Mensajes no dejan compartir el texto de un mensaje: para esos, copiar | Ninguno |
+| Revisar lo copiado | Al abrir la app, si hay texto copiado, ofrece revisarlo (solo mira si existe; lo lee al tocar el botón). Botón "Revisar copiado" en los ajustes rápidos | Ninguno |
 | Revisar enlaces antes de abrirlos | Se elige SScuDo como app para abrir enlaces. Mira la dirección en el momento del toque y la pasa al navegador. Solo se muestra si hay señales | Ser la app de navegador predeterminada |
+| Enlaces acortados | Pregunta al acortador a dónde redirige (solo la cabecera `Location`, sin abrir el destino), revisa el destino y abre el destino ya revisado. Si el acortador no responde, avisa en vez de abrir | Internet |
+| Ver la página sin abrirla | Desde el aviso de un enlace: el servicio de SScuDo abre la página en Cloudflare y devuelve captura, camino del enlace y datos del código (solo si existe `SSCUDO_API`) | Internet |
 | Avisar si llega un mensaje de estafa | Lee el texto de las notificaciones entrantes y alerta solo en nivel alto | Acceso a notificaciones |
 
-El motor es el mismo JavaScript de la web (`assets/motor.js`), ejecutado en un WebView sin interfaz y **con la red bloqueada**. No se guarda ni se envía ningún texto.
+El motor es el mismo JavaScript de la web (`assets/motor.js`), ejecutado en un WebView sin interfaz y **con la red bloqueada**. No se guarda ni se envía ningún texto. Lo único que sale es la dirección de un enlace, en los dos casos de arriba.
 
 ## Por qué no "vigila la pantalla"
 
@@ -29,26 +32,33 @@ No hay ningún proceso propio corriendo de fondo ni temporizadores. El revisor d
 
 ## Lista de comprobación en un teléfono
 
-Nadie ha probado todavía el APK en un teléfono real: se compila en GitHub y ahí termina lo comprobado.
-Estas seis pruebas son el paso 1 de `docs/HOJA_DE_RUTA.md`. Usa los mensajes de ejemplo de la propia
-app; no hace falta un mensaje de estafa de verdad.
+Primera prueba: 13/11/2026 con la v0.2.0 (resultados en `docs/HOJA_DE_RUTA.md`). Lo de abajo es para el
+APK siguiente. Usa los mensajes de ejemplo de la propia app; no hace falta un mensaje de estafa real.
 
-- [ ] **Abre.** La app inicia y muestra la pantalla "Revisar" con Term.
-- [ ] **Pegar.** Toca un ejemplo de estafa → sale nivel alto con las frases resaltadas. Toca un ejemplo
-      legítimo → "sin señales".
-- [ ] **Compartir.** En WhatsApp o Mensajes, mantén presionado un mensaje → Compartir → SScuDo. La app
-      abre con ese texto ya analizado.
-- [ ] **Seleccionar texto.** En cualquier app, selecciona un texto → menú ⋮ → "Revisar con SScuDo".
-- [ ] **Enlaces.** En la app, panel "Protección automática" → "Revisar enlaces antes de abrirlos". Elige SScuDo como navegador.
-      Toca un enlace normal (por ejemplo de una noticia): debe abrir en tu navegador de siempre sin que
-      notes nada. Luego escribe en Notas `http://viabcp.com.seguridad-clientes.online/login` y tócalo:
-      debe aparecer el aviso antes de abrir.
-- [ ] **Notificaciones.** Panel "Protección automática" → "Avisarme si llega un mensaje de estafa" (en Android 13+ primero
-      "Permitir ajustes restringidos"). Pide a alguien que te envíe por WhatsApp el texto de un ejemplo
-      de estafa: debe llegar una alerta de SScuDo. Un mensaje normal no debe generar nada.
+- [ ] **Abre.** La app inicia con el diseño claro y la pantalla "Revisar" con Term.
+- [ ] **Ejemplos.** Toca un ejemplo de estafa → sale el sello "Alta probabilidad de estafa" y las frases
+      resaltadas. Toca "Mensaje normal" → sello "Sin señales conocidas".
+- [ ] **Copiar en WhatsApp.** Mantén presionado un mensaje → Copiar → abre SScuDo: arriba de la caja
+      aparece "Tienes algo copiado. ¿Lo reviso?". Al tocarlo, se revisa.
+- [ ] **Botón de ajustes rápidos.** Baja la cortina, toca el lápiz y agrega "Revisar copiado". Copia un
+      mensaje, baja la cortina y tócalo: SScuDo abre con el mensaje ya revisado.
+- [ ] **Seleccionar texto.** En cualquier app, selecciona un texto → menú ⋮ → "SScuDo".
+- [ ] **Enlaces.** Panel "Protección automática" → "Revisar enlaces antes de abrirlos" → elige SScuDo.
+      Un enlace normal se abre sin que notes nada. `http://viabcp.com.seguridad-clientes.online/login`
+      escrito en Notas muestra el aviso con el sello.
+- [ ] **Acortados.** Acorta en bit.ly una dirección normal (por ejemplo una noticia) y tócala: debe
+      abrir la noticia (quizás con una pantalla breve "Es un enlace acortado"). Acorta
+      `http://viabcp.com.seguridad-clientes.online/login` y tócala: debe salir el aviso con el camino
+      `bit.ly ↓ viabcp.com.seguridad-clientes.online`.
+- [ ] **Notificaciones.** Panel → "Avisarme si llega un mensaje de estafa" (en Android 13+ primero
+      "Permitir ajustes restringidos"). Que alguien te envíe por WhatsApp un ejemplo de estafa: llega
+      una alerta. Un mensaje normal no genera nada.
 
 Si algo falla, anota el modelo del teléfono, la versión de Android y qué pasó. Para volver atrás:
 Ajustes → Apps → Apps predeterminadas → Navegador, y elige el de antes.
+
+Lo que no se puede arreglar desde la app: el lugar de "SScuDo" en el menú de texto (lo ordena Android)
+y que WhatsApp no ofrezca "Compartir" para mensajes de texto.
 
 ## Límites
 

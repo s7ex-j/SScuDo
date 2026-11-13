@@ -19,7 +19,8 @@ Lee esto y `docs/HOJA_DE_RUTA.md`; con eso basta para continuar sin la conversac
 | Entidades y dominios oficiales | `src/engine/brands.ts` + `docs/DOMINIOS.md` |
 | Análisis de enlaces | `src/engine/urls.ts` |
 | Análisis de páginas (extensión, Android) | `src/engine/page.ts` |
-| Interfaz de la app | `src/App.tsx`, `src/styles.css` |
+| Análisis del código de una página (servicio) | `src/engine/html.ts`, `worker/src/pagina.ts` |
+| Interfaz de la app | `src/App.tsx`, `src/styles.css` (diseño "el sello del trámite", ver abajo) |
 | Página de presentación | `index.html`, `src/landing/` |
 | Extensión | `extension/` |
 | Android | `android/`, `docs/ANDROID.md` |
@@ -43,7 +44,10 @@ cambia el número en `VERSION` y haz push; no hacen falta etiquetas.
 
 ## Reglas que no se rompen
 
-1. **El motor no usa red ni IA** y el texto analizado nunca sale del dispositivo.
+1. **El motor no usa red ni IA** y el texto analizado nunca sale del dispositivo. Lo único que puede
+   salir es la **dirección de un enlace**, y solo en dos casos: Android pregunta a un acortador a dónde
+   redirige (la misma petición que haría el navegador), y "Ver la página sin abrirla" la manda al
+   servicio (`POST /pagina`), que la abre desde Cloudflare y no la guarda. Nunca el mensaje.
 2. **Nunca "es seguro".** El mejor resultado posible es "sin señales", con su advertencia.
 3. **Cero falsos positivos conocidos**: toda regla nueva se corre contra los legítimos de
    `tests/dataset.ts` y `tests/reserva.ts`. Si uno se marca, la regla no entra.
@@ -59,6 +63,14 @@ cambia el número en `VERSION` y haz push; no hacen falta etiquetas.
 12. **Commits a nombre de Jharol, sin líneas `Co-Authored-By` ni `Claude-Session`.**
 13. **No afirmar lo que no se comprobó.** El README dice qué se midió y cómo; si algo no se probó en un
     teléfono, se dice.
+
+## Diseño de la app
+
+"El sello del trámite": papel claro (`#EDF0F3`), tinta azul (`#1D2A44`) y el veredicto como un sello de
+tinta, lo único llamativo y lo único que se anima. Rojo `#C41E3A` = alto, ocre `#9A5F0C` = sospechoso,
+gris azulado `#4A5A78` = sin señales u oficial. **Sin verde**: nada debe leerse como "seguro". Letra
+Atkinson Hyperlegible (distingue l/1/I y rn/m, clave para ver dominios falsos) y Archivo condensada solo
+para títulos y el sello. Las pantallas nativas (`LinkActivity`) usan los mismos colores.
 
 ## Cómo comprobar cambios de interfaz
 

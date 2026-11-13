@@ -95,15 +95,15 @@ La cifra honesta es la del medio: **14 de 20** frente a redacciones que el motor
 
 **Sin verificar todavía**
 - Mensajes de estafa reales. Es lo primero que falta.
-- **La app de Android compila en CI, pero nadie la ha instalado ni usado en un teléfono.** No se probó ninguna de sus funciones en un dispositivo: ni la interfaz, ni el revisor de enlaces, ni el aviso de mensajes.
+- **App de Android:** la v0.2.0 se probó una vez en un teléfono (13/11/2026). Seleccionar texto → SScuDo funcionó; "Compartir" no sirve con texto de WhatsApp ni de Mensajes; los enlaces acortados pasaban sin revisarse. Lo corregido después (desacortar, revisar lo copiado, botón de ajustes rápidos, nuevo diseño) compila en CI pero **todavía no se probó en un teléfono**.
 - La app web instalada en un celular real y su "Compartir → SScuDo".
 - El despliegue automático del servicio en Cloudflare (`servicio.yml`) no se ejecutó con credenciales reales.
 - La extensión se probó cargada en Chrome real contra páginas de prueba locales (4 de 4 casos), no contra páginas de phishing reales ni en uso diario. El clic derecho no se probó.
-- El servicio de reportes pasó sus pruebas en local (11 casos, más la app contra él), pero no está publicado: faltan los secretos de Cloudflare en el repositorio. La extensión todavía no usa la lista de reportes.
-- Dominios oficiales: 22 entidades tienen su dominio comprobado con fuente y fijado en una prueba; 9 dominios siguen en la lista sin fuente anotada. El detalle está en [docs/DOMINIOS.md](docs/DOMINIOS.md).
+- El servicio (reportes y revisión de páginas) pasó sus pruebas en local (18 casos, con páginas inventadas y un fetch simulado), pero no está publicado: faltan los secretos de Cloudflare en el repositorio. La captura de pantalla (Browser Rendering) no se probó: solo existe en Cloudflare. La extensión todavía no usa la lista de reportes.
+- Dominios oficiales: todos los dominios de `brands.ts` tienen fuente anotada y están fijados en una prueba. El detalle está en [docs/DOMINIOS.md](docs/DOMINIOS.md).
 
 **Límites de diseño**
-- No abre enlaces, no consulta la antigüedad de un dominio y no lee imágenes ni audios.
+- Al revisar un mensaje no abre enlaces ni consulta la antigüedad de un dominio. Eso solo pasa si tocas "Ver la página sin abrirla": el servicio abre la página desde Cloudflare (nunca desde tu teléfono) y solo recibe la dirección. No lee imágenes ni audios.
 - Reconoce patrones conocidos. Una estafa nueva o bien escrita puede pasar sin marca.
 - No reemplaza a tu banco ni a la Policía.
 
